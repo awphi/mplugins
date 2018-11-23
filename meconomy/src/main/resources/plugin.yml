@@ -1,0 +1,15 @@
+main: ph.adamw.moose.eco.MEconomy
+name: mEconomy
+version: 1.0.0
+description: Adds economy features.
+author: awphi
+api-version: 1.13
+prefix: mEconomy
+commands:
+  pay:
+    description: Pay another player.
+    usage: /pay <player> <amount>
+  balance:
+    description: Get balance of a player.
+    usage: /balance <player>
+    aliases: [bal, money, cash]

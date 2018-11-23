@@ -1,0 +1,8 @@
+main: ph.adamw.moose.rpg.MRpg
+name: mRPG
+version: 1.0.0
+description: Adds gameplay RPG-lite elements.
+author: awphi
+api-version: 1.13
+prefix: mRpg
+softdepend: [mEconomy]
