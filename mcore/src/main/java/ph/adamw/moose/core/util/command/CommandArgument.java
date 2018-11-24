@@ -1,142 +1,176 @@
 package ph.adamw.moose.core.util.command;
 
-import com.google.common.collect.ImmutableSet;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import ph.adamw.moose.core.MCore;
 
-import java.util.Set;
+import java.util.HashMap;
 
 public abstract class CommandArgument<T> {
-	private final static Set<CommandArgument> SET = new ImmutableSet.Builder<CommandArgument>()
-			.add(new CommandArgument<Player>("[player]") {
-				@Override
-				public String getInvalidDataString(String arg) {
-					return "{" + arg + "} isn't currently online.";
-				}
+	private final static HashMap<String, CommandArgument> registry = new HashMap<>();
 
-				@Override
-				public boolean isSyntaxValid(String arg) {
-					return !arg.isEmpty();
-				}
+	static {
+		register(new CommandArgument<Player>("[player]") {
+			@Override
+			public String getInvalidDataString(String arg) {
+				return "{" + arg + "} isn't currently online.";
+			}
 
-				@Override
-				public Player getObjectFromArg(String arg, Player player) {
-					for(Player i : Bukkit.getOnlinePlayers()) {
-						if(i.getName().equals(arg)) {
-							return i;
-						}
+			@Override
+			public boolean isSyntaxValid(String arg) {
+				return !arg.isEmpty();
+			}
+
+			@Override
+			public Player getObjectFromArg(String arg, Player player) {
+				for(Player i : Bukkit.getOnlinePlayers()) {
+					if(i.getName().equals(arg)) {
+						return i;
 					}
-
-					return null;
 				}
 
-				@Override
-				public String toHumanString() {
-					return "online player";
-				}
-			})
-			.add(new CommandArgument<OfflinePlayer>("[offlineplayer]") {
-				@Override
-				public String getInvalidDataString(String arg) {
-					return "{" + arg + "} has never logged on.";
-				}
+				return null;
+			}
 
-				@Override
-				public boolean isSyntaxValid(String arg) {
-					return !arg.isEmpty();
-				}
+			@Override
+			public String toHumanString() {
+				return "online player";
+			}
+		});
 
-				@Override
-				public OfflinePlayer getObjectFromArg(String arg, Player player) {
-					for(OfflinePlayer i : Bukkit.getOfflinePlayers()) {
-						if(i.getName().equalsIgnoreCase(arg)) {
-							return i;
-						}
+		register(new CommandArgument<OfflinePlayer>("[offlineplayer]") {
+			@Override
+			public String getInvalidDataString(String arg) {
+				return "{" + arg + "} has never logged on.";
+			}
+
+			@Override
+			public boolean isSyntaxValid(String arg) {
+				return !arg.isEmpty();
+			}
+
+			@Override
+			public OfflinePlayer getObjectFromArg(String arg, Player player) {
+				for(OfflinePlayer i : Bukkit.getOfflinePlayers()) {
+					if(i.getName().equalsIgnoreCase(arg)) {
+						return i;
 					}
-
-					return null;
 				}
 
-				@Override
-				public String toHumanString() {
-					return "player";
-				}
-			})
-			.add(new CommandArgument<Integer>("[integer]") {
-				@Override
-				public String getInvalidDataString(String arg) {
-					return "{" + arg + "} is not an integer.";
-				}
+				return null;
+			}
 
-				@Override
-				public boolean isSyntaxValid(String arg) {
-					return arg.matches("[1-9][0-9]*");
-				}
+			@Override
+			public String toHumanString() {
+				return "player";
+			}
+		});
 
-				@Override
-				public Integer getObjectFromArg(String arg, Player player) {
-					return Integer.valueOf(arg);
-				}
+		register(new CommandArgument<Integer>("[integer]") {
+			@Override
+			public String getInvalidDataString(String arg) {
+				return "{" + arg + "} is not an integer.";
+			}
 
-				@Override
-				public String toHumanString() {
-					return "integer";
-				}
-			})
-			.add(new CommandArgument<Double>("[double]") {
-				@Override
-				public String getInvalidDataString(String arg) {
-					return "{" + arg + "} is not a rational number.";
-				}
+			@Override
+			public boolean isSyntaxValid(String arg) {
+				return arg.matches("[1-9][0-9]*");
+			}
 
-				@Override
-				public boolean isSyntaxValid(String arg) {
-					return arg.matches("[1-9][0-9]*(.[0-9]+)?");
-				}
+			@Override
+			public Integer getObjectFromArg(String arg, Player player) {
+				return Integer.valueOf(arg);
+			}
 
-				@Override
-				public Double getObjectFromArg(String arg, Player player) {
-					return Double.valueOf(arg);
-				}
+			@Override
+			public String toHumanString() {
+				return "integer";
+			}
+		});
 
-				@Override
-				public String toHumanString() {
-					return "decimal";
-				}
-			})
-			.add(new CommandArgument<CommandWrapper>("[mcommand]") {
-				@Override
-				public String getInvalidDataString(String arg) {
-					return "{" + arg + "} is not a recognised command on this server.";
-				}
+		register(new CommandArgument<Double>("[double]") {
+			@Override
+			public String getInvalidDataString(String arg) {
+				return "{" + arg + "} is not a rational number.";
+			}
 
-				@Override
-				public boolean isSyntaxValid(String arg) {
-					return !arg.isEmpty();
-				}
+			@Override
+			public boolean isSyntaxValid(String arg) {
+				return arg.matches("[1-9][0-9]*(.[0-9]+)?");
+			}
 
-				@Override
-				public CommandWrapper getObjectFromArg(String arg, Player player) {
-					return MCore.getPlugin().getCommandRegistry().getWrapper(arg);
-				}
+			@Override
+			public Double getObjectFromArg(String arg, Player player) {
+				return Double.valueOf(arg);
+			}
 
-				@Override
-				public String toHumanString() {
-					return "command";
-				}
-			})
-			.build();
+			@Override
+			public String toHumanString() {
+				return "decimal";
+			}
+		});
+
+		register(new CommandArgument<CommandWrapper>("[mcommand]") {
+			@Override
+			public String getInvalidDataString(String arg) {
+				return "{" + arg + "} is not a recognised command on this server.";
+			}
+
+			@Override
+			public boolean isSyntaxValid(String arg) {
+				return !arg.isEmpty();
+			}
+
+			@Override
+			public CommandWrapper getObjectFromArg(String arg, Player player) {
+				return MCore.getPlugin().getCommandRegistry().getWrapper(arg);
+			}
+
+			@Override
+			public String toHumanString() {
+				return "command";
+			}
+		});
+
+		register(new CommandArgument<String>("[string]") {
+			@Override
+			public String getInvalidDataString(String arg) {
+				// Should never call unless [string] has been used in the wrong context
+				// for fixed string syntaces, use them literally when defining syntax (w/o square brackets) e.g.
+				// /admin economy add [offlineplayer] [integer]
+				// /admin economy remove [offlineplayer] integer
+
+				return "Didn't recognise {" + arg + "} as a string";
+			}
+
+			@Override
+			public boolean isSyntaxValid(String arg) {
+				return !arg.isEmpty();
+			}
+
+			@Override
+			public String getObjectFromArg(String arg, Player player) {
+				return arg;
+			}
+
+			@Override
+			public String toHumanString() {
+				return "text";
+			}
+		});
+	}
+
+	public static void register(CommandArgument<?> e) {
+		registry.put(e.pattern, e);
+	}
 
 	public static CommandArgument fromPattern(String pattern) {
-		for(CommandArgument i : SET) {
-			if(i.pattern.equalsIgnoreCase(pattern)) {
-				return i;
-			}
+		if(!registry.containsKey(pattern)) {
+			throw new RuntimeException("Unknown command argument " + pattern + ", is this a typo or did you not register it?");
 		}
 
-		throw new RuntimeException("Unknown command argument " + pattern + ", is this a typo or did you not register it?");
+		return registry.get(pattern);
 	}
 
 	private final String pattern;
