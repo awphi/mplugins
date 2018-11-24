@@ -5,6 +5,7 @@ description: Adds economy features.
 author: awphi
 api-version: 1.13
 prefix: mEconomy
+depend: [mCore]
 commands:
   pay:
     description: Pay another player.
@@ -13,3 +14,7 @@ commands:
     description: Get balance of a player.
     usage: /balance <player>
     aliases: [bal, money, cash]
+  vault:
+    description: Access your vault.
+    usage: /vault
+    aliases: [bank, storage]

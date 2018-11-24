@@ -14,7 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>ph.adamw</groupId>
-            <artifactId>mutils</artifactId>
+            <artifactId>mcore</artifactId>
             <version>1.0</version>
             <scope>compile</scope>
         </dependency>
@@ -24,6 +24,12 @@
             <artifactId>meconomy</artifactId>
             <version>1.0</version>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.tr7zw</groupId>
+            <artifactId>Item-NBT-API</artifactId>
+            <version>master</version>
         </dependency>
     </dependencies>
 

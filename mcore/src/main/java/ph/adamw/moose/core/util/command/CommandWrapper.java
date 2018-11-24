@@ -1,16 +1,21 @@
-package ph.adamw.moose.util.command;
+package ph.adamw.moose.core.util.command;
 
+import lombok.Getter;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
-import ph.adamw.moose.util.chat.ChatUtils;
+import ph.adamw.moose.core.MCore;
+import ph.adamw.moose.core.util.chat.ChatUtils;
 
 import java.util.logging.Level;
 
 public abstract class CommandWrapper implements CommandExecutor {
+	@Getter
 	private final String base;
+
+	@Getter
 	private final CommandSyntax[] syntaxes;
 
 	public CommandWrapper(String base, CommandSyntax[] syntaxes) {
@@ -20,10 +25,12 @@ public abstract class CommandWrapper implements CommandExecutor {
 
 	public static void registerCommand(JavaPlugin plugin, CommandWrapper wrapper) {
 		final PluginCommand command = plugin.getCommand(wrapper.base);
+
 		if(command == null) {
 			plugin.getLogger().log(Level.SEVERE, "Failed to register command " + wrapper.base + " did you add it to plugin.yml?");
 		} else {
 			command.setExecutor(wrapper);
+			MCore.getPlugin().getCommandRegistry().register(wrapper);
 		}
 	}
 
@@ -49,11 +56,6 @@ public abstract class CommandWrapper implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if(args.length > 0 && args[0].equalsIgnoreCase("help")) {
-			ChatUtils.messageCommandHelp(sender, this);
-			return true;
-		}
-
 		// Zero-arg commands
 		if(syntaxes == null || syntaxes.length == 0) {
 			commandSuccessful(-1, sender, command, label, null);
@@ -70,7 +72,7 @@ public abstract class CommandWrapper implements CommandExecutor {
 		final String isDataValid = syntax.isDataValid(args);
 
 		if(isDataValid != null) {
-			ChatUtils.messageError(sender, "Command Error!", isDataValid);
+			ChatUtils.messageError(sender, "Invalid Input!", isDataValid);
 			return true;
 		}
 

@@ -5,7 +5,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.inventory.ItemStack;
 import ph.adamw.moose.rpg.MRpg;
-import ph.adamw.moose.util.PluginEnchantmentWrapper;
+import ph.adamw.moose.core.util.PluginEnchantmentWrapper;
 
 public class FishermansDelightWrapper extends PluginEnchantmentWrapper {
 	public FishermansDelightWrapper() {

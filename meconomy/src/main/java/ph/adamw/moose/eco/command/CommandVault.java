@@ -4,13 +4,13 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import ph.adamw.moose.eco.MEconomy;
-import ph.adamw.moose.util.command.CommandSyntax;
-import ph.adamw.moose.util.command.CommandWrapper;
+import ph.adamw.moose.core.util.command.CommandSyntax;
+import ph.adamw.moose.core.util.command.CommandWrapper;
 
 public class CommandVault extends CommandWrapper {
 	public CommandVault() {
 		super("vault", new CommandSyntax[] {
-				new CommandSyntax("")
+				new CommandSyntax("", "Access your own item vault.")
 		});
 	}
 

@@ -5,13 +5,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import ph.adamw.moose.util.PluginFile;
+import ph.adamw.moose.core.util.PluginFile;
 
 import java.util.UUID;
 
 public class EconomyHandler implements Listener {
 	private static final String PREFIX = "account_";
-	private final PluginFile config = MEconomy.getPlugin().getEconomyStore();
+	private final PluginFile config = MEconomy.getPlugin().getEcoConfig();
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event){

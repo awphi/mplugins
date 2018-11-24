@@ -5,4 +5,4 @@ description: Adds gameplay RPG-lite elements.
 author: awphi
 api-version: 1.13
 prefix: mRpg
-softdepend: [mEconomy]
+depend: [mCore, mEconomy, ItemNBTAPI]

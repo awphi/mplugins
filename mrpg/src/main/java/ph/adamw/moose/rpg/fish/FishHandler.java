@@ -1,5 +1,6 @@
 package ph.adamw.moose.rpg.fish;
 
+import de.tr7zw.itemnbtapi.NBTItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -9,12 +10,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import ph.adamw.moose.rpg.fish.data.FishQuality;
 import ph.adamw.moose.rpg.fish.data.FishSpecies;
-import ph.adamw.moose.util.nbt.ItemStackWrapper;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Random;
 
@@ -30,22 +32,25 @@ public class FishHandler implements Listener {
 	}
 
 	private static ItemStack getStack(FishSpecies species, float weight, FishQuality quality, Player catcher) {
-		ItemStackWrapper wrapper = new ItemStackWrapper(species.getMaterial(), 1);
+		final ItemStack fish = new ItemStack(species.getMaterial(), 1);
+		final ItemMeta meta = fish.getItemMeta();
 
-		// Name
 		final ChatColor col = species.getTier().getColor();
-		wrapper.setName(col + "" + ChatColor.ITALIC + "" + quality.getString() + ChatColor.RESET + " " + col + "" + species.getString() + ChatColor.RESET + " - " + col + decimalFormat.format(weight) + "lb");
 
-		// Lore
-		wrapper.setLore("Caught by: " + catcher.getDisplayName() + " on " + dateFormat.format(new Date()));
+		meta.setDisplayName(col + "" + ChatColor.ITALIC + "" + quality.getString() + ChatColor.RESET + " " + col + "" + species.getString() + ChatColor.RESET + " - " + col + decimalFormat.format(weight) + "lb");
+		meta.setLore(Collections.singletonList("Caught by: " + catcher.getDisplayName() + " on " + dateFormat.format(new Date())));
+
+		fish.setItemMeta(meta);
+
+		final NBTItem wrapper = new NBTItem(fish);
 
 		// NBT
-		wrapper.setInt("fishSpecies", species.ordinal());
+		wrapper.setInteger("fishSpecies", species.ordinal());
 		wrapper.setFloat("fishWeight", weight);
-		wrapper.setInt("fishQuality", quality.ordinal());
-		wrapper.setInt("fishScore", (int) (weight * quality.getMultiplier() * species.getMultiplier()));
+		wrapper.setInteger("fishQuality", quality.ordinal());
+		wrapper.setInteger("fishScore", (int) (weight * quality.getMultiplier() * species.getMultiplier()));
 
-		return wrapper.getItemStack();
+		return wrapper.getItem();
 	}
 
 	private static ItemStack getRandomFish(Player catcher) {
@@ -55,6 +60,7 @@ public class FishHandler implements Listener {
 	@EventHandler
 	public void onFish(PlayerFishEvent event) {
 		final ItemStack heldItem = event.getPlayer().getInventory().getItemInMainHand();
+
 		if(heldItem.getType() != Material.FISHING_ROD || !heldItem.containsEnchantment(FISHERMANS_DELIGHT)) {
 			return;
 		}
@@ -66,8 +72,8 @@ public class FishHandler implements Listener {
 
 	@EventHandler
 	public void onEat(PlayerItemConsumeEvent event) {
-		ItemStackWrapper wrapper = new ItemStackWrapper(event.getItem());
-		if(event.getItem().getType() == Material.COD && wrapper.isTagEmpty("fishScore")) {
+		final NBTItem wrapper = new NBTItem(event.getItem());
+		if(event.getItem().getType() == Material.COD && wrapper.hasKey("fishScore")) {
 			FishSpecies.FishEffects.apply(event.getItem(), event.getPlayer());
 		}
 	}

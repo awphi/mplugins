@@ -1,4 +1,4 @@
-package ph.adamw.moose.util;
+package ph.adamw.moose.core.util;
 
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;

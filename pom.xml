@@ -10,7 +10,7 @@
     <version>1.0</version>
 
     <modules>
-        <module>mutils</module>
+        <module>mcore</module>
         <module>meconomy</module>
         <module>mrpg</module>
     </modules>
@@ -23,6 +23,11 @@
         <repository>
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
     </repositories>
 
@@ -59,6 +64,7 @@
                                 <goal>shade</goal>
                             </goals>
                             <configuration>
+                                <minimizeJar>true</minimizeJar>
                                 <shadedArtifactAttached>true</shadedArtifactAttached>
                                 <outputDirectory>${serverdir}/plugins</outputDirectory>
                                 <createDependencyReducedPom>false</createDependencyReducedPom>

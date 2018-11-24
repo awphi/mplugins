@@ -5,15 +5,16 @@ import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 import ph.adamw.moose.eco.command.CommandBalance;
 import ph.adamw.moose.eco.command.CommandPay;
-import ph.adamw.moose.util.PluginFile;
-import ph.adamw.moose.util.command.CommandWrapper;;
+import ph.adamw.moose.eco.command.CommandVault;
+import ph.adamw.moose.core.util.PluginFile;
+import ph.adamw.moose.core.util.command.CommandWrapper;;
 
 public class MEconomy extends JavaPlugin {
 	@Getter
 	private static MEconomy plugin;
 
 	@Getter
-	private PluginFile economyStore;
+	private PluginFile ecoConfig;
 
 	@Getter
 	private EconomyHandler economyHandler;
@@ -23,17 +24,18 @@ public class MEconomy extends JavaPlugin {
 		plugin = this;
 		ConfigurationSerialization.registerClass(EconomyProfile.class);
 
-		economyStore = new PluginFile(this, "eco.yml");
+		ecoConfig = new PluginFile(this, "eco.yml");
 		economyHandler = new EconomyHandler();
 
 		getServer().getPluginManager().registerEvents(economyHandler, this);
 
 		CommandWrapper.registerCommand(this, new CommandPay());
 		CommandWrapper.registerCommand(this, new CommandBalance());
+		CommandWrapper.registerCommand(this, new CommandVault());
 	}
 
 	@Override
 	public void onDisable(){
-		economyStore.save();
+		ecoConfig.save();
 	}
 }

@@ -1,0 +1,11 @@
+main: ph.adamw.moose.core.MCore
+name: mCore
+version: 1.0.0
+description: Core features for mPlugins.
+author: awphi
+api-version: 1.13
+prefix: mCore
+commands:
+  help:
+    description: Get command help.
+    usage: /help <command>

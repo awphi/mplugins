@@ -1,9 +1,8 @@
 package ph.adamw.moose.eco;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,19 +10,31 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import ph.adamw.moose.core.util.AutoSerializable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class EconomyProfile implements ConfigurationSerializable, Listener {
+public class EconomyProfile extends AutoSerializable implements Listener {
 	@Getter
 	private double balance = 0;
 
-	public List<ItemStack> vault = new ArrayList<>();
-	private Inventory openVault;
+	@Setter
+	private int vaultSize = 9;
+
+	private List<ItemStack> vault = new ArrayList<>();
+
+	private transient Inventory openVault;
+
+	public EconomyProfile() {
+		MEconomy.getPlugin().getServer().getPluginManager().registerEvents(this, MEconomy.getPlugin());
+	}
+
+	public EconomyProfile(Map<String, Object> map) {
+		super(map);
+	}
 
 	public void addBalance(int add) {
 		balance += add;
@@ -34,8 +45,11 @@ public class EconomyProfile implements ConfigurationSerializable, Listener {
 	}
 
 	public void openVault(Player to) {
-		openVault = Bukkit.createInventory(to, (int) Math.ceil((double) vault.size() / 9.0d));
-		openVault.addItem(vault.toArray(new ItemStack[0]));
+		if(openVault == null) {
+			openVault = Bukkit.createInventory(to, vaultSize, "Vault");
+			openVault.addItem(vault.toArray(new ItemStack[0]));
+		}
+
 		to.openInventory(openVault);
 	}
 
@@ -49,24 +63,8 @@ public class EconomyProfile implements ConfigurationSerializable, Listener {
 			vault.clear();
 			vault.addAll(Arrays.asList(openVault.getContents()));
 			openVault.clear();
+
+			openVault = null;
 		}
-	}
-
-	@SuppressWarnings("unchecked")
-	public static EconomyProfile deserialize(Map<String, Object> map) {
-		final EconomyProfile result = new EconomyProfile();
-		result.balance = (double) map.get("balance");
-		result.vault = (List<ItemStack>) map.get("vault");
-
-		return result;
-	}
-
-	@Override
-	public Map<String, Object> serialize() {
-		final Map<String, Object> result = new LinkedHashMap<>();
-		result.put("balance", balance);
-		result.put("vault", vault);
-
-		return result;
 	}
 }

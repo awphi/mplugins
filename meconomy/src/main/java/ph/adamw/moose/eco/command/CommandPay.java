@@ -5,15 +5,14 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import ph.adamw.moose.eco.MEconomy;
-import ph.adamw.moose.util.chat.ChatUtils;
-import ph.adamw.moose.util.command.CommandWrapper;
-import ph.adamw.moose.util.command.CommandSyntax;
+import ph.adamw.moose.core.util.chat.ChatUtils;
+import ph.adamw.moose.core.util.command.CommandWrapper;
+import ph.adamw.moose.core.util.command.CommandSyntax;
 
 public class CommandPay extends CommandWrapper {
 	public CommandPay() {
 		super("pay", new CommandSyntax[] {
-				new CommandSyntax("[offlineplayer] [double]"),
-				new CommandSyntax("[double] [offlineplayer]")
+				new CommandSyntax("[offlineplayer] [double]", "Pay another player a sum of money.")
 		});
 	}
 
@@ -35,7 +34,7 @@ public class CommandPay extends CommandWrapper {
 				return;
 			}
 
-			ChatUtils.messageEconomy(online, "Money Received!", "{" + ((Player) sender).getDisplayName() + "} just paid you {$" + amount + "}.");
+			ChatUtils.messageEconomy(online, "Payment Received!", "{" + ((Player) sender).getDisplayName() + "} just paid you {$" + amount + "}.");
 		}
 	}
 }

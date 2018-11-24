@@ -1,4 +1,4 @@
-package ph.adamw.moose.util;
+package ph.adamw.moose.core.util;
 
 import java.io.File;
 import java.io.IOException;
@@ -69,11 +69,7 @@ public class PluginFile extends YamlConfiguration {
 				save();
 			}
 
-		} catch (IOException exception) {
-			exception.printStackTrace();
-			plugin.getLogger().severe("Error while loading file " + file.getName());
-
-		} catch (InvalidConfigurationException exception) {
+		} catch (IOException | InvalidConfigurationException exception) {
 			exception.printStackTrace();
 			plugin.getLogger().severe("Error while loading file " + file.getName());
 

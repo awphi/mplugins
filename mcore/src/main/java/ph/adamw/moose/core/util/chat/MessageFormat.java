@@ -1,11 +1,11 @@
-package ph.adamw.moose.util.chat;
+package ph.adamw.moose.core.util.chat;
 
 import org.bukkit.ChatColor;
 
 public enum MessageFormat {
-	INFO("• ", "|header| |content|", ChatColor.DARK_AQUA, ChatColor.AQUA, ChatColor.GRAY, ChatColor.WHITE),
-	ERROR("• ", "|header| |content|", ChatColor.DARK_RED, ChatColor.RED, ChatColor.GRAY, ChatColor.WHITE),
-	ECONOMY("• ", "|header| |content|", ChatColor.DARK_GREEN, ChatColor.GREEN, ChatColor.GRAY, ChatColor.WHITE);
+	INFO("⨠ ", "|header| |content|", ChatColor.DARK_AQUA, ChatColor.AQUA, ChatColor.GRAY, ChatColor.WHITE),
+	ERROR("⨠ ", "|header| |content|", ChatColor.DARK_RED, ChatColor.RED, ChatColor.GRAY, ChatColor.WHITE),
+	ECONOMY("⨠ ", "|header| |content|", ChatColor.DARK_GREEN, ChatColor.GREEN, ChatColor.GRAY, ChatColor.WHITE);
 
 	private final String icon;
 	private final String format;
@@ -29,7 +29,11 @@ public enum MessageFormat {
 		content = content.replaceAll("}", contentColor.toString());
 
 		String x = iconColor + icon + format;
-		x = x.replace("|header|", headerColor + header);
+		if(header == null || header.isEmpty()) {
+			x = x.replace("|header| ", "");
+		} else {
+			x = x.replace("|header|", headerColor + header);
+		}
 		x = x.replace("|content|", contentColor + content);
 
 		return x;

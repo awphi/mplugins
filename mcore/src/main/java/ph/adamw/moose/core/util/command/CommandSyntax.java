@@ -1,11 +1,16 @@
-package ph.adamw.moose.util.command;
+package ph.adamw.moose.core.util.command;
 
-import org.bukkit.ChatColor;
+import lombok.Getter;
 
 public class CommandSyntax {
 	private final String[] pattern;
 
-	public CommandSyntax(String pattern) {
+	@Getter
+	private final String helpText;
+
+	public CommandSyntax(String pattern, String helpText) {
+		this.helpText = helpText;
+
 		if(pattern.isEmpty()) {
 			this.pattern = new String[0];
 		} else {
@@ -45,7 +50,7 @@ public class CommandSyntax {
 			if(pattern[i].startsWith("[")) {
 				final CommandArgument argument = CommandArgument.fromPattern(pattern[i]);
 
-				if (argument.getObjectFromArg(args[i]) == null) {
+				if (argument.getObjectFromArg(args[i], ) == null) {
 					return argument.getInvalidDataString(args[i]);
 				}
 			} else {
@@ -64,7 +69,7 @@ public class CommandSyntax {
 		for(int i = 0; i < args.length; i ++) {
 			if(pattern[i].startsWith("[")) {
 				final CommandArgument argument = CommandArgument.fromPattern(pattern[i]);
-				objs[i] = argument.getObjectFromArg(args[i]);
+				objs[i] = argument.getObjectFromArg(args[i], );
 			} else {
 				// Raw string (i.e. for switcher commands like /admin eco, /admin region
 				objs[i] = pattern[i];
@@ -72,5 +77,20 @@ public class CommandSyntax {
 		}
 
 		return objs;
+	}
+
+	public String toHumanString() {
+		final StringBuilder sb = new StringBuilder();
+
+		for(String i : pattern) {
+			sb.append(" ");
+			if(i.startsWith("[")) {
+				sb.append("<" + CommandArgument.fromPattern(i).toHumanString() + ">");
+			} else {
+				sb.append(i);
+			}
+		}
+
+		return sb.toString();
 	}
 }

@@ -1,4 +1,4 @@
-package ph.adamw.moose.util;
+package ph.adamw.moose.core.util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

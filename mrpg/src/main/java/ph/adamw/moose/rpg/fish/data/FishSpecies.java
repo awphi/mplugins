@@ -1,12 +1,12 @@
 package ph.adamw.moose.rpg.fish.data;
 
+import de.tr7zw.itemnbtapi.NBTItem;
 import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import ph.adamw.moose.util.nbt.ItemStackWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,15 +107,15 @@ public enum FishSpecies {
 		private final PotionEffectType[] effects;
 
 		public static void apply(ItemStack fish, Player player) {
-			ItemStackWrapper wrapper = new ItemStackWrapper(fish);
-			if(wrapper.isTagEmpty("fishScore")) {
+			final NBTItem wrapper = new NBTItem(fish);
+			if(wrapper.hasKey("fishScore")) {
 				return;
 			}
 
 			final int length = (int) (wrapper.getFloat("fishWeight") * 100f);
-			final int potency = wrapper.getInt("fishQuality") + 2;
+			final int potency = wrapper.getInteger("fishQuality") + 2;
 
-			final FishEffects effects = FishSpecies.get(wrapper.getInt("fishSpecies")).getEffects();
+			final FishEffects effects = FishSpecies.get(wrapper.getInteger("fishSpecies")).getEffects();
 
 			for(PotionEffectType type : effects.getEffects()) {
 				player.addPotionEffect(new PotionEffect(type, length, potency));
