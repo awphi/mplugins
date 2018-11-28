@@ -1,21 +1,38 @@
 package ph.adamw.moose.core.util.command;
 
 import lombok.Getter;
+import org.bukkit.command.CommandSender;
 
 public class CommandSyntax {
 	private final String[] pattern;
+	private final String fullString;
 
 	@Getter
 	private final String helpText;
 
+	@Getter
+	private final boolean isOnHelp;
+
 	public CommandSyntax(String pattern, String helpText) {
+		this(pattern, helpText, false);
+	}
+
+	public CommandSyntax(String pattern, String helpText, boolean isOnHelp) {
 		this.helpText = helpText;
+		this.isOnHelp = isOnHelp;
+
+		this.fullString = pattern;
 
 		if(pattern.isEmpty()) {
 			this.pattern = new String[0];
 		} else {
 			this.pattern = pattern.split(" ");
 		}
+	}
+	
+	@Override
+	public String toString() {
+		return fullString;
 	}
 
 	public boolean syntaxMatches(String[] args) {
@@ -40,7 +57,31 @@ public class CommandSyntax {
 		return true;
 	}
 
-	public String isDataValid(String[] args) {
+	/**
+	 * Matches raw arguments with raw strings expressed in the command syntax (i.e. not variable inputs [integer], [string] etc.)
+	 * @param args Arguments to run comparison against
+	 * @return int - How many raw string matches were present
+	 */
+	public int getArgumentMatches(String[] args) {
+		int c = 0;
+
+		for(int i = 0; i < args.length; i ++) {
+			if(i >= pattern.length) {
+				break;
+			}
+
+
+			if(!pattern[i].startsWith("[")) {
+				if (args[i].equalsIgnoreCase(pattern[i])) {
+					c ++;
+				}
+			}
+		}
+
+		return c;
+	}
+
+	public String isDataValid(CommandSender sender, String[] args) {
 		if(pattern.length != args.length) {
 			// Should never be called since isDataValid *SHOULD* only ever be ran after syntaxMatches() which checks this
 			return "Too few arguments given.";
@@ -50,7 +91,7 @@ public class CommandSyntax {
 			if(pattern[i].startsWith("[")) {
 				final CommandArgument argument = CommandArgument.fromPattern(pattern[i]);
 
-				if (argument.getObjectFromArg(args[i], ) == null) {
+				if (argument.getObjectFromArg(args[i], sender) == null) {
 					return argument.getInvalidDataString(args[i]);
 				}
 			} else {
@@ -63,13 +104,13 @@ public class CommandSyntax {
 		return null;
 	}
 
-	public Object[] stringArgsToObjects(String[] args) {
+	public Object[] stringArgsToObjects(String[] args, CommandSender sender) {
 		final Object[] objs = new Object[args.length];
 
 		for(int i = 0; i < args.length; i ++) {
 			if(pattern[i].startsWith("[")) {
 				final CommandArgument argument = CommandArgument.fromPattern(pattern[i]);
-				objs[i] = argument.getObjectFromArg(args[i], );
+				objs[i] = argument.getObjectFromArg(args[i], sender);
 			} else {
 				// Raw string (i.e. for switcher commands like /admin eco, /admin region
 				objs[i] = pattern[i];

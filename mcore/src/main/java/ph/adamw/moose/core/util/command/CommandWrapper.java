@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 import ph.adamw.moose.core.MCore;
+import ph.adamw.moose.core.perms.Rank;
 import ph.adamw.moose.core.util.chat.ChatUtils;
 
 import java.util.logging.Level;
@@ -16,10 +17,18 @@ public abstract class CommandWrapper implements CommandExecutor {
 	private final String base;
 
 	@Getter
+	private final Rank rank;
+
+	@Getter
 	private final CommandSyntax[] syntaxes;
 
 	public CommandWrapper(String base, CommandSyntax[] syntaxes) {
+		this(base, syntaxes, Rank.MEMBER);
+	}
+
+	public CommandWrapper(String base, CommandSyntax[] syntaxes, Rank rank) {
 		this.base = base;
+		this.rank = rank;
 		this.syntaxes = syntaxes;
 	}
 
@@ -27,21 +36,11 @@ public abstract class CommandWrapper implements CommandExecutor {
 		final PluginCommand command = plugin.getCommand(wrapper.base);
 
 		if(command == null) {
-			plugin.getLogger().log(Level.SEVERE, "Failed to register command " + wrapper.base + " did you add it to plugin.yml?");
+			plugin.getLogger().log(Level.SEVERE, "Failed to registerConfig basic " + wrapper.base + " did you add it to plugin.yml?");
 		} else {
 			command.setExecutor(wrapper);
 			MCore.getPlugin().getCommandRegistry().register(wrapper);
 		}
-	}
-
-	private int indexOfSyntax(CommandSyntax syntax) {
-		for(int i = 0; i < syntaxes.length; i ++) {
-			if(syntaxes[i] == syntax) {
-				return i;
-			}
-		}
-
-		return - 1;
 	}
 
 	private CommandSyntax getValidSyntaxPattern(String[] args) {
@@ -54,31 +53,59 @@ public abstract class CommandWrapper implements CommandExecutor {
 		return null;
 	}
 
+	private CommandSyntax getAssumedSyntax(String[] args) {
+		int winner = 0;
+		CommandSyntax syntax = null;
+
+		for(CommandSyntax i : syntaxes) {
+			int c = i.getArgumentMatches(args);
+
+			if(c > winner) {
+				syntax = i;
+				winner = c;
+			}
+		}
+
+		return syntax;
+	}
+
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		if(!MCore.getPlugin().getRankHandler().hasPermission(sender, rank)) {
+			ChatUtils.messageNoPerms(sender);
+			return true;
+		}
+
 		// Zero-arg commands
 		if(syntaxes == null || syntaxes.length == 0) {
-			commandSuccessful(-1, sender, command, label, null);
+			commandSuccessful(null, sender, command, label, null);
 			return true;
 		}
 
 		final CommandSyntax syntax = getValidSyntaxPattern(args);
 
+		//TODO look into partial syntax matching like if someone does '/region add' it will tell them 'try /region add <player>'
 		if(syntax == null) {
-			ChatUtils.messageInvalidSyntax(sender, command.getName());
+			final CommandSyntax assumed = getAssumedSyntax(args);
+			if(assumed != null) {
+				ChatUtils.messageSyntaxHelp(sender, base, assumed);
+			} else {
+				ChatUtils.messageInvalidSyntax(sender, command.getName());
+			}
+
 			return true;
 		}
 
-		final String isDataValid = syntax.isDataValid(args);
+		final String isDataValid = syntax.isDataValid(sender, args);
 
 		if(isDataValid != null) {
 			ChatUtils.messageError(sender, "Invalid Input!", isDataValid);
 			return true;
 		}
 
-		commandSuccessful(indexOfSyntax(syntax), sender, command, label, syntax.stringArgsToObjects(args));
+		commandSuccessful(syntax.toString(), sender, command, label, syntax.stringArgsToObjects(args, sender));
 		return true;
 	}
 
-	public abstract void commandSuccessful(int syntax, CommandSender sender, Command command, String label, Object[] args);
+	public abstract void commandSuccessful(String syntax, CommandSender sender, Command command, String label, Object[] args);
 }

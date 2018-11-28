@@ -1,4 +1,4 @@
-package ph.adamw.moose.core.util;
+package ph.adamw.moose.core.util.config;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,39 +9,24 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class PluginFile extends YamlConfiguration {
+public class Config extends YamlConfiguration {
+	protected final File file;
+	private final String defaults;
+	private final JavaPlugin plugin;
 
-	private File file;
-	private String defaults;
-	private JavaPlugin plugin;
-
-	/**
-	 * Creates new PluginFile, without defaults
-	 * @param plugin - Your plugin
-	 * @param fileName - Name of the file
-	 */
-	public PluginFile(JavaPlugin plugin, String fileName) {
+	public Config(JavaPlugin plugin, String fileName) {
 		this(plugin, fileName, null);
 	}
 
-	/**
-	 * Creates new PluginFile, with defaults
-	 * @param plugin - Your plugin
-	 * @param fileName - Name of the file
-	 * @param defaultsName - Name of the defaults
-	 */
-	public PluginFile(JavaPlugin plugin, String fileName, String defaultsName) {
+	public Config(JavaPlugin plugin, String fileName, String defaultsName) {
 		this.plugin = plugin;
 		this.defaults = defaultsName;
 		this.file = new File(plugin.getDataFolder(), fileName);
+
 		reload();
 	}
 
-	/**
-	 * Reload configuration
-	 */
 	public void reload() {
-
 		if (!file.exists()) {
 
 			try {
@@ -77,9 +62,6 @@ public class PluginFile extends YamlConfiguration {
 
 	}
 
-	/**
-	 * Save configuration
-	 */
 	public void save() {
 
 		try {
@@ -92,5 +74,4 @@ public class PluginFile extends YamlConfiguration {
 		}
 
 	}
-
 }

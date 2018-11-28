@@ -3,6 +3,7 @@ package ph.adamw.moose.core.util.chat;
 import org.bukkit.ChatColor;
 
 public enum MessageFormat {
+	RAW("", "|content|", ChatColor.GRAY, ChatColor.GRAY, ChatColor.GRAY, ChatColor.WHITE),
 	INFO("⨠ ", "|header| |content|", ChatColor.DARK_AQUA, ChatColor.AQUA, ChatColor.GRAY, ChatColor.WHITE),
 	ERROR("⨠ ", "|header| |content|", ChatColor.DARK_RED, ChatColor.RED, ChatColor.GRAY, ChatColor.WHITE),
 	ECONOMY("⨠ ", "|header| |content|", ChatColor.DARK_GREEN, ChatColor.GREEN, ChatColor.GRAY, ChatColor.WHITE);

@@ -2,8 +2,10 @@ package ph.adamw.moose.core.util.command;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import ph.adamw.moose.core.MCore;
+import ph.adamw.moose.survival.region.Region;
 
 import java.util.HashMap;
 
@@ -23,7 +25,7 @@ public abstract class CommandArgument<T> {
 			}
 
 			@Override
-			public Player getObjectFromArg(String arg, Player player) {
+			public Player getObjectFromArg(String arg, CommandSender sender) {
 				for(Player i : Bukkit.getOnlinePlayers()) {
 					if(i.getName().equals(arg)) {
 						return i;
@@ -51,7 +53,7 @@ public abstract class CommandArgument<T> {
 			}
 
 			@Override
-			public OfflinePlayer getObjectFromArg(String arg, Player player) {
+			public OfflinePlayer getObjectFromArg(String arg, CommandSender sender) {
 				for(OfflinePlayer i : Bukkit.getOfflinePlayers()) {
 					if(i.getName().equalsIgnoreCase(arg)) {
 						return i;
@@ -79,7 +81,7 @@ public abstract class CommandArgument<T> {
 			}
 
 			@Override
-			public Integer getObjectFromArg(String arg, Player player) {
+			public Integer getObjectFromArg(String arg, CommandSender sender) {
 				return Integer.valueOf(arg);
 			}
 
@@ -101,7 +103,7 @@ public abstract class CommandArgument<T> {
 			}
 
 			@Override
-			public Double getObjectFromArg(String arg, Player player) {
+			public Double getObjectFromArg(String arg, CommandSender sender) {
 				return Double.valueOf(arg);
 			}
 
@@ -114,7 +116,7 @@ public abstract class CommandArgument<T> {
 		register(new CommandArgument<CommandWrapper>("[mcommand]") {
 			@Override
 			public String getInvalidDataString(String arg) {
-				return "{" + arg + "} is not a recognised command on this server.";
+				return "{" + arg + "} is not a recognised basic on this server.";
 			}
 
 			@Override
@@ -123,13 +125,13 @@ public abstract class CommandArgument<T> {
 			}
 
 			@Override
-			public CommandWrapper getObjectFromArg(String arg, Player player) {
+			public CommandWrapper getObjectFromArg(String arg, CommandSender sender) {
 				return MCore.getPlugin().getCommandRegistry().getWrapper(arg);
 			}
 
 			@Override
 			public String toHumanString() {
-				return "command";
+				return "basic";
 			}
 		});
 
@@ -150,13 +152,35 @@ public abstract class CommandArgument<T> {
 			}
 
 			@Override
-			public String getObjectFromArg(String arg, Player player) {
+			public String getObjectFromArg(String arg, CommandSender sender) {
 				return arg;
 			}
 
 			@Override
 			public String toHumanString() {
 				return "text";
+			}
+		});
+
+		register(new CommandArgument<Region>("[region]") {
+			@Override
+			public String getInvalidDataString(String arg) {
+				return "There is not a region called {" + arg + "}.";
+			}
+
+			@Override
+			public boolean isSyntaxValid(String arg) {
+				return !arg.isEmpty();
+			}
+
+			@Override
+			public Region getObjectFromArg(String arg, CommandSender sender) {
+				return MCore.getPlugin().getRegionHandler().getRegion(arg);
+			}
+
+			@Override
+			public String toHumanString() {
+				return "region name";
 			}
 		});
 	}
@@ -167,7 +191,7 @@ public abstract class CommandArgument<T> {
 
 	public static CommandArgument fromPattern(String pattern) {
 		if(!registry.containsKey(pattern)) {
-			throw new RuntimeException("Unknown command argument " + pattern + ", is this a typo or did you not register it?");
+			throw new RuntimeException("Unknown basic argument: " + pattern + ", is this a typo or did you not registerConfig it?");
 		}
 
 		return registry.get(pattern);
@@ -183,7 +207,7 @@ public abstract class CommandArgument<T> {
 
 	public abstract boolean isSyntaxValid(String arg);
 
-	public abstract T getObjectFromArg(String arg, Player player);
+	public abstract T getObjectFromArg(String arg, CommandSender sender);
 
 	public abstract String toHumanString();
 }

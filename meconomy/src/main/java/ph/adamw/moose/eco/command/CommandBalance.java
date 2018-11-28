@@ -21,17 +21,17 @@ public class CommandBalance extends CommandWrapper {
 	}
 
 	@Override
-	public void commandSuccessful(int syntax, CommandSender sender, Command command, String label, Object[] args) {
+	public void commandSuccessful(String syntax, CommandSender sender, Command command, String label, Object[] args) {
 		final UUID uuid;
 
-		if(syntax == 0) {
+		if(syntax.equals("")) {
 			uuid = ((Player) sender).getUniqueId();
 		} else {
 			uuid = ((OfflinePlayer) args[0]).getUniqueId();
 		}
 
 		final EconomyProfile profile = MEconomy.getPlugin().getEconomyHandler().getProfile(uuid);
-		final String who = syntax == 0 ? "You have " : "{" + ((OfflinePlayer) args[0]).getName() + "} has ";
+		final String who = syntax.equals("") ? "You have " : "{" + ((OfflinePlayer) args[0]).getName() + "} has ";
 
 		ChatUtils.messageEconomy(sender, "Balance:",  who + "{$" + profile.getBalance() + "}.");
 	}

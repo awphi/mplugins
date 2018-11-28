@@ -6,15 +6,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 import ph.adamw.moose.eco.command.CommandBalance;
 import ph.adamw.moose.eco.command.CommandPay;
 import ph.adamw.moose.eco.command.CommandVault;
-import ph.adamw.moose.core.util.PluginFile;
-import ph.adamw.moose.core.util.command.CommandWrapper;;
+import ph.adamw.moose.core.util.config.Config;
+import ph.adamw.moose.core.util.command.CommandWrapper;
 
 public class MEconomy extends JavaPlugin {
 	@Getter
 	private static MEconomy plugin;
 
 	@Getter
-	private PluginFile ecoConfig;
+	private Config ecoConfig;
 
 	@Getter
 	private EconomyHandler economyHandler;
@@ -22,9 +22,10 @@ public class MEconomy extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		plugin = this;
+
 		ConfigurationSerialization.registerClass(EconomyProfile.class);
 
-		ecoConfig = new PluginFile(this, "eco.yml");
+		ecoConfig = new Config(this, "eco.yml", false);
 		economyHandler = new EconomyHandler();
 
 		getServer().getPluginManager().registerEvents(economyHandler, this);

@@ -20,7 +20,6 @@ public class MRpg extends JavaPlugin {
 		ECONOMY = (MEconomy) Bukkit.getPluginManager().getPlugin("mEconomy");
 
 		fishHandler = new FishHandler();
-		getServer().getPluginManager().registerEvents(fishHandler, this);
 	}
 
 	@Override

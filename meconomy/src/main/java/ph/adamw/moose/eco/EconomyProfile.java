@@ -10,7 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import ph.adamw.moose.core.util.AutoSerializable;
+import ph.adamw.moose.core.util.config.AutoSerializable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,28 +26,38 @@ public class EconomyProfile extends AutoSerializable implements Listener {
 
 	private List<ItemStack> vault = new ArrayList<>();
 
-	private transient Inventory openVault;
+	private transient Inventory openVault = null;
 
 	public EconomyProfile() {
 		MEconomy.getPlugin().getServer().getPluginManager().registerEvents(this, MEconomy.getPlugin());
 	}
 
-	public EconomyProfile(Map<String, Object> map) {
-		super(map);
+	public static EconomyProfile deserialize(Map<String, Object> map) {
+		return deserializeBase(EconomyProfile.class, map);
 	}
 
-	public void addBalance(int add) {
+	public void addBalance(double add) {
 		balance += add;
 	}
 
-	public void removeBalance(int remove) {
+	public void removeBalance(double remove) {
 		balance = balance - remove >= 0 ? balance - remove : 0;
 	}
 
 	public void openVault(Player to) {
 		if(openVault == null) {
 			openVault = Bukkit.createInventory(to, vaultSize, "Vault");
-			openVault.addItem(vault.toArray(new ItemStack[0]));
+			for(int i = 0; i < vaultSize; i ++) {
+				if(i >= vault.size()) {
+					break;
+				}
+
+				final ItemStack is = vault.get(i);
+
+				if(is != null) {
+					openVault.setItem(i, is);
+				}
+			}
 		}
 
 		to.openInventory(openVault);
@@ -59,11 +69,9 @@ public class EconomyProfile extends AutoSerializable implements Listener {
 			return;
 		}
 
-		if(openVault == event.getInventory()) {
+		if(event.getInventory().equals(openVault)) {
 			vault.clear();
 			vault.addAll(Arrays.asList(openVault.getContents()));
-			openVault.clear();
-
 			openVault = null;
 		}
 	}

@@ -10,6 +10,7 @@
         <module name="mcore" />
         <module name="meconomy" />
         <module name="mrpg" />
+        <module name="msurvival" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>

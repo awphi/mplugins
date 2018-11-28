@@ -1,5 +1,6 @@
-package ph.adamw.moose.core.util;
+package ph.adamw.moose.core.util.config;
 
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
@@ -8,17 +9,29 @@ import java.lang.reflect.Modifier;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 public abstract class AutoSerializable implements ConfigurationSerializable {
-	public AutoSerializable(Map<String, Object> map) {
-		for(Field i : this.getClass().getDeclaredFields()) {
+	protected static <T extends AutoSerializable> T deserializeBase(Class<T> clazz, Map<String, Object> map) {
+		final T inst;
+		try {
+			inst = clazz.newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
+			return null;
+		}
+
+		for(Field i : clazz.getDeclaredFields()) {
 			i.setAccessible(true);
 			try {
-				i.set(this, map.get(i.getName()));
+				if(map.containsKey(i.getName())) {
+					i.set(inst, map.get(i.getName()));
+				}
 			} catch (IllegalAccessException e) {
 				e.printStackTrace();
 			}
 		}
+
+		return inst;
 	}
 
 	@Override

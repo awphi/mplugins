@@ -11,6 +11,7 @@ import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import ph.adamw.moose.rpg.MRpg;
 import ph.adamw.moose.rpg.fish.data.FishQuality;
 import ph.adamw.moose.rpg.fish.data.FishSpecies;
 
@@ -29,6 +30,10 @@ public class FishHandler implements Listener {
 
 	static {
 		decimalFormat.setMaximumFractionDigits(2);
+	}
+
+	public FishHandler() {
+		MRpg.getPlugin().getServer().getPluginManager().registerEvents(this, MRpg.getPlugin());
 	}
 
 	private static ItemStack getStack(FishSpecies species, float weight, FishQuality quality, Player catcher) {

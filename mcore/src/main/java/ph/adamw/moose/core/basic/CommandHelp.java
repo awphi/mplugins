@@ -1,4 +1,4 @@
-package ph.adamw.moose.core.command;
+package ph.adamw.moose.core.basic;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -10,15 +10,15 @@ public class CommandHelp extends CommandWrapper {
 	public CommandHelp() {
 		super("help", new CommandSyntax[] {
 				new CommandSyntax("", "Access the help menu."),
-				new CommandSyntax("[mcommand]", "Access the help menu of a specific command.")
+				new CommandSyntax("[mcommand]", "Access the help menu of a specific basic.")
 		});
 	}
 
 	@Override
-	public void commandSuccessful(int syntax, CommandSender sender, Command command, String label, Object[] args) {
-		if(syntax == 0) {
+	public void commandSuccessful(String syntax, CommandSender sender, Command command, String label, Object[] args) {
+		if(syntax.equals("")) {
 			//TODO
-		} else if(syntax == 1) {
+		} else {
 			ChatUtils.messageCommandHelp(sender, (CommandWrapper) args[0]);
 		}
 	}

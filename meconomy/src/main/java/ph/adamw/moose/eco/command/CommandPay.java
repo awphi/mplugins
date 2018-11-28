@@ -17,9 +17,9 @@ public class CommandPay extends CommandWrapper {
 	}
 
 	@Override
-	public void commandSuccessful(int syntax, CommandSender sender, Command command, String label, Object[] args) {
-		final OfflinePlayer to = syntax == 0 ? (Player) args[0] : (Player) args[1];
-		final int amount = syntax == 0 ? (Integer) args[1] : (Integer) args[0];
+	public void commandSuccessful(String syntax, CommandSender sender, Command command, String label, Object[] args) {
+		final OfflinePlayer to = (OfflinePlayer) args[0];
+		final double amount = (double) args[1];
 
 		if(!(sender instanceof Player)) {
 			return;
@@ -28,13 +28,11 @@ public class CommandPay extends CommandWrapper {
 		if(!MEconomy.getPlugin().getEconomyHandler().attemptTransfer((Player) sender, to, amount)) {
 			ChatUtils.messageError(sender, "Low Funds!", "You don't have enough money to complete that transaction.");
 		} else {
-			final Player online = to.getPlayer();
-
-			if(online == null) {
-				return;
+			if(to.isOnline()) {
+				ChatUtils.messageEconomy(to.getPlayer(), "Payment Received!", "{" + ((Player) sender).getDisplayName() + "} just paid you {$" + amount + "}.");
+			} else {
+				//TODO mail
 			}
-
-			ChatUtils.messageEconomy(online, "Payment Received!", "{" + ((Player) sender).getDisplayName() + "} just paid you {$" + amount + "}.");
 		}
 	}
 }

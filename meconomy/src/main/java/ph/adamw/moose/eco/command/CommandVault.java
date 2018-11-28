@@ -15,7 +15,7 @@ public class CommandVault extends CommandWrapper {
 	}
 
 	@Override
-	public void commandSuccessful(int syntax, CommandSender sender, Command command, String label, Object[] args) {
+	public void commandSuccessful(String syntax, CommandSender sender, Command command, String label, Object[] args) {
 		if(!(sender instanceof Player)) {
 			return;
 		}

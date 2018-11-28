@@ -32,18 +32,4 @@
             <version>master</version>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>build-plugins</id>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 </project>

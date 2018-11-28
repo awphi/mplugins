@@ -1,0 +1,8 @@
+main: ph.adamw.moose.rpg.MSurvival
+name: mSurvival
+version: 1.0.0
+description: Survival elements for mCraft.
+author: awphi
+api-version: 1.13
+prefix: mSurvival
+depend: [mCore]
