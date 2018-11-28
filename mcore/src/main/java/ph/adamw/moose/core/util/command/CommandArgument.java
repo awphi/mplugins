@@ -5,7 +5,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import ph.adamw.moose.core.MCore;
-import ph.adamw.moose.survival.region.Region;
 
 import java.util.HashMap;
 
@@ -159,28 +158,6 @@ public abstract class CommandArgument<T> {
 			@Override
 			public String toHumanString() {
 				return "text";
-			}
-		});
-
-		register(new CommandArgument<Region>("[region]") {
-			@Override
-			public String getInvalidDataString(String arg) {
-				return "There is not a region called {" + arg + "}.";
-			}
-
-			@Override
-			public boolean isSyntaxValid(String arg) {
-				return !arg.isEmpty();
-			}
-
-			@Override
-			public Region getObjectFromArg(String arg, CommandSender sender) {
-				return MCore.getPlugin().getRegionHandler().getRegion(arg);
-			}
-
-			@Override
-			public String toHumanString() {
-				return "region name";
 			}
 		});
 	}

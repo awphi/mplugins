@@ -1,8 +1,11 @@
 package ph.adamw.moose.survival;
 
 import lombok.Getter;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
+import ph.adamw.moose.core.MCore;
+import ph.adamw.moose.core.util.command.CommandArgument;
 import ph.adamw.moose.core.util.command.CommandWrapper;
 import ph.adamw.moose.core.util.config.Config;
 import ph.adamw.moose.survival.region.CommandRegion;
@@ -25,7 +28,7 @@ public class MSurvival extends JavaPlugin {
 
 		ConfigurationSerialization.registerClass(Region.class);
 
-		this.regionConfig = new Config(this, "regions.yml", false);
+		this.regionConfig = new Config(this, "regions.yml");
 		this.regionHandler = new RegionHandler();
 
 		CommandWrapper.registerCommand(this, new CommandRegion());

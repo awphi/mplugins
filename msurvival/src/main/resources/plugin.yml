@@ -1,4 +1,4 @@
-main: ph.adamw.moose.rpg.MSurvival
+main: ph.adamw.moose.survival.MSurvival
 name: mSurvival
 version: 1.0.0
 description: Survival elements for mCraft.

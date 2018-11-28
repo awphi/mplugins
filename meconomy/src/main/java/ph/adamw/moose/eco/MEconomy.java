@@ -25,7 +25,7 @@ public class MEconomy extends JavaPlugin {
 
 		ConfigurationSerialization.registerClass(EconomyProfile.class);
 
-		ecoConfig = new Config(this, "eco.yml", false);
+		ecoConfig = new Config(this, "eco.yml");
 		economyHandler = new EconomyHandler();
 
 		getServer().getPluginManager().registerEvents(economyHandler, this);

@@ -2,7 +2,9 @@ package ph.adamw.moose.survival.region;
 
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import ph.adamw.moose.core.util.command.CommandArgument;
 import ph.adamw.moose.core.util.config.Config;
 import ph.adamw.moose.core.util.chat.ChatUtils;
 import ph.adamw.moose.survival.MSurvival;
@@ -23,6 +25,30 @@ public class RegionHandler {
 	private final Map<UUID, Location[]> locationMap = new HashMap<>();
 
 	private final RegionListener listener = new RegionListener(this);
+
+	static {
+		CommandArgument.register(new CommandArgument<Region>("[region]") {
+			@Override
+			public String getInvalidDataString(String arg) {
+				return "There is not a region called {" + arg + "}.";
+			}
+
+			@Override
+			public boolean isSyntaxValid(String arg) {
+				return !arg.isEmpty();
+			}
+
+			@Override
+			public Region getObjectFromArg(String arg, CommandSender sender) {
+				return MSurvival.getPlugin().getRegionHandler().getRegion(arg);
+			}
+
+			@Override
+			public String toHumanString() {
+				return "region name";
+			}
+		});
+	}
 
 	public RegionHandler() {
 		if(!config.contains(REG_SECTION) || !config.contains(CHUNKS_SECTION)) {
