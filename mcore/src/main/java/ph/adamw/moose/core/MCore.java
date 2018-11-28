@@ -22,15 +22,11 @@ public class MCore extends JavaPlugin {
 	@Getter
 	private Config rankConfig;
 
-	@Getter
-	private Config syncConfig;
-
 	@Override
 	public void onEnable() {
 		plugin = this;
 
-		this.syncConfig = new Config(this, "sync.yml", "sync.yml");
-
+		this.rankConfig = new Config(this, "ranks.yml");
 		this.rankHandler = new RankHandler();
 
 		CommandWrapper.registerCommand(this, new CommandHelp());
