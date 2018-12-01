@@ -10,6 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import ph.adamw.moose.core.util.ItemUtils;
 import ph.adamw.moose.core.util.config.AutoSerializable;
 
 import java.util.ArrayList;
@@ -47,17 +48,7 @@ public class EconomyProfile extends AutoSerializable implements Listener {
 	public void openVault(Player to) {
 		if(openVault == null) {
 			openVault = Bukkit.createInventory(to, vaultSize, "Vault");
-			for(int i = 0; i < vaultSize; i ++) {
-				if(i >= vault.size()) {
-					break;
-				}
-
-				final ItemStack is = vault.get(i);
-
-				if(is != null) {
-					openVault.setItem(i, is);
-				}
-			}
+			ItemUtils.copyInventoryConents(vault, openVault);
 		}
 
 		to.openInventory(openVault);

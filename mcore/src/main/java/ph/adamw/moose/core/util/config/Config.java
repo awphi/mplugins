@@ -7,21 +7,26 @@ import java.io.InputStreamReader;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.event.EventHandler;
 import org.bukkit.plugin.java.JavaPlugin;
+import ph.adamw.moose.core.MCore;
+import ph.adamw.moose.core.util.MPlugin;
 
 public class Config extends YamlConfiguration {
 	protected final File file;
 	private final String defaults;
 	private final JavaPlugin plugin;
 
-	public Config(JavaPlugin plugin, String fileName) {
+	public Config(MPlugin plugin, String fileName) {
 		this(plugin, fileName, null);
 	}
 
-	public Config(JavaPlugin plugin, String fileName, String defaultsName) {
+	public Config(MPlugin plugin, String fileName, String defaultsName) {
 		this.plugin = plugin;
 		this.defaults = defaultsName;
 		this.file = new File(plugin.getDataFolder(), fileName);
+
+		MCore.getPlugin().getConfigRegistry().register(plugin, this);
 
 		reload();
 	}
@@ -72,6 +77,10 @@ public class Config extends YamlConfiguration {
 			exception.printStackTrace();
 			plugin.getLogger().severe("Error while saving file " + file.getName());
 		}
+	}
 
+	@EventHandler
+	public void onDisable() {
+		save();
 	}
 }

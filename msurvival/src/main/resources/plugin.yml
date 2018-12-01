@@ -6,3 +6,8 @@ author: awphi
 api-version: 1.13
 prefix: mSurvival
 depend: [mCore]
+commands:
+  region:
+    description: Regions
+    usage: /region
+    alises: rg, protect, protection, land

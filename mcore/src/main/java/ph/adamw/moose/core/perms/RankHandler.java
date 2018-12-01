@@ -23,7 +23,7 @@ public class RankHandler implements Listener {
 	private static final String MSG_FORMAT = "%1$s" + ChatColor.WHITE + " > " + ChatColor.GRAY + "%2$s";
 	private static final Rank JOIN_RANK = Rank.MEMBER;
 
-	private final Config config = MCore.getPlugin().getRankConfig();
+	private final Config config = new Config(MCore.getPlugin(), "ranks.yml");
 
 	public RankHandler() {
 		MCore.getPlugin().getServer().getPluginManager().registerEvents(this, MCore.getPlugin());

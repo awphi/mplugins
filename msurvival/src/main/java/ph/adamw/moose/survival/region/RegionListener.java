@@ -25,7 +25,13 @@ public class RegionListener implements Listener {
 	}
 
 	private void blockEvent(Cancellable event, Location location, Player player, RegionRank rank) {
-		if(handler.getRegion(location).getRankOf(player).canPerform(rank)) {
+		final Region region = handler.getRegion(location);
+
+		if(region == null) {
+			return;
+		}
+
+		if(!region.containsPlayer(player) || !region.getRankOf(player).canPerform(rank)) {
 			event.setCancelled(true);
 			ChatUtils.messageError(player, "No Permissions!", "You don't have permission to do that here.");
 		}

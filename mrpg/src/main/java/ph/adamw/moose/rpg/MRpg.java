@@ -2,11 +2,12 @@ package ph.adamw.moose.rpg;
 
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import ph.adamw.moose.core.util.MPlugin;
 import ph.adamw.moose.eco.MEconomy;
 import ph.adamw.moose.rpg.fish.FishHandler;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class MRpg extends JavaPlugin {
+public class MRpg extends MPlugin {
 	public static MEconomy ECONOMY;
 
 	@Getter
@@ -20,9 +21,5 @@ public class MRpg extends JavaPlugin {
 		ECONOMY = (MEconomy) Bukkit.getPluginManager().getPlugin("mEconomy");
 
 		fishHandler = new FishHandler();
-	}
-
-	@Override
-	public void onDisable(){
 	}
 }

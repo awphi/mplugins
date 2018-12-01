@@ -115,7 +115,7 @@ public abstract class CommandArgument<T> {
 		register(new CommandArgument<CommandWrapper>("[mcommand]") {
 			@Override
 			public String getInvalidDataString(String arg) {
-				return "{" + arg + "} is not a recognised basic on this server.";
+				return "{" + arg + "} is not a recognised command on this server.";
 			}
 
 			@Override
@@ -138,7 +138,7 @@ public abstract class CommandArgument<T> {
 			@Override
 			public String getInvalidDataString(String arg) {
 				// Should never call unless [string] has been used in the wrong context
-				// for fixed string syntaces, use them literally when defining syntax (w/o square brackets) e.g.
+				// for fixed string syntax, use them literally when defining syntax (w/o square brackets) e.g.
 				// /admin economy add [offlineplayer] [integer]
 				// /admin economy remove [offlineplayer] integer
 

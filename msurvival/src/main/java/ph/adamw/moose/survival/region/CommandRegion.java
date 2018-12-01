@@ -42,7 +42,7 @@ public class CommandRegion extends CommandWrapper {
 	@Override
 	public void commandSuccessful(String syntax, CommandSender sender, Command command, String label, Object[] args) {
 		if (!(sender instanceof Player)) {
-			ChatUtils.messageError(sender, "Players Only!", "This basic can only be executed by players!");
+			ChatUtils.messageError(sender, "Players Only!", "This command can only be executed by players!");
 			return;
 		}
 

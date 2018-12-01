@@ -10,7 +10,7 @@ public class CommandHelp extends CommandWrapper {
 	public CommandHelp() {
 		super("help", new CommandSyntax[] {
 				new CommandSyntax("", "Access the help menu."),
-				new CommandSyntax("[mcommand]", "Access the help menu of a specific basic.")
+				new CommandSyntax("[mcommand]", "Access the help menu of a specific command.")
 		});
 	}
 

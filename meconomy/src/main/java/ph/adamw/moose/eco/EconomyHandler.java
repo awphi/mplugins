@@ -11,7 +11,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 public class EconomyHandler implements Listener {
-	private final Config config = MEconomy.getPlugin().getEcoConfig();
+	private final Config config = new Config(MEconomy.getPlugin(), "economy.yml");
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event){

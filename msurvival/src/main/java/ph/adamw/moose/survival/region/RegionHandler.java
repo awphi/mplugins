@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class RegionHandler {
-	private Config config = MSurvival.getPlugin().getRegionConfig();
+	private Config config = new Config(MSurvival.getPlugin(), "regions.yml", "regions.yml");
 
 	private static final String CHUNKS_SECTION = "chunks";
 	private static final String REG_SECTION = "registry";
@@ -48,13 +48,6 @@ public class RegionHandler {
 				return "region name";
 			}
 		});
-	}
-
-	public RegionHandler() {
-		if(!config.contains(REG_SECTION) || !config.contains(CHUNKS_SECTION)) {
-			config.createSection(REG_SECTION, new HashMap<String, Region>());
-			config.createSection(CHUNKS_SECTION, new HashMap<String, List<String>>());
-		}
 	}
 
 	public Region registerRegion(String name, Location corner1, Location corner2) {

@@ -36,7 +36,7 @@ public abstract class CommandWrapper implements CommandExecutor {
 		final PluginCommand command = plugin.getCommand(wrapper.base);
 
 		if(command == null) {
-			plugin.getLogger().log(Level.SEVERE, "Failed to registerConfig basic " + wrapper.base + " did you add it to plugin.yml?");
+			plugin.getLogger().log(Level.SEVERE, "Failed to registerMultiBlock command: " + wrapper.base + " did you add it to plugin.yml?");
 		} else {
 			command.setExecutor(wrapper);
 			MCore.getPlugin().getCommandRegistry().register(wrapper);
@@ -84,7 +84,6 @@ public abstract class CommandWrapper implements CommandExecutor {
 
 		final CommandSyntax syntax = getValidSyntaxPattern(args);
 
-		//TODO look into partial syntax matching like if someone does '/region add' it will tell them 'try /region add <player>'
 		if(syntax == null) {
 			final CommandSyntax assumed = getAssumedSyntax(args);
 			if(assumed != null) {

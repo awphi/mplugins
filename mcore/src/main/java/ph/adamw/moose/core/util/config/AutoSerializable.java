@@ -6,11 +6,25 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 public abstract class AutoSerializable implements ConfigurationSerializable {
+	private static List<Field> getFields(Class clazz) {
+		List<Field> fields = new ArrayList<>();
+
+		while (clazz != Object.class) {
+			fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
+			clazz = clazz.getSuperclass();
+		}
+
+		return fields;
+	}
+
 	protected static <T extends AutoSerializable> T deserializeBase(Class<T> clazz, Map<String, Object> map) {
 		final T inst;
 		try {
@@ -20,8 +34,9 @@ public abstract class AutoSerializable implements ConfigurationSerializable {
 			return null;
 		}
 
-		for(Field i : clazz.getDeclaredFields()) {
+		for(Field i : getFields(clazz)) {
 			i.setAccessible(true);
+
 			try {
 				if(map.containsKey(i.getName())) {
 					i.set(inst, map.get(i.getName()));
@@ -38,7 +53,7 @@ public abstract class AutoSerializable implements ConfigurationSerializable {
 	public Map<String, Object> serialize() {
 		final Map<String, Object> result = new LinkedHashMap<>();
 
-		for(Field i : this.getClass().getDeclaredFields()) {
+		for(Field i : getFields(this.getClass())) {
 			i.setAccessible(true);
 
 			if(!Modifier.isTransient(i.getModifiers())) {

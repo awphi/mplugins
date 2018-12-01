@@ -12,7 +12,3 @@ commands:
   rank:
     description: Get ranks.
     usage: /rank <player>
-  region:
-    description: Regions
-    usage: /region
-    alises: rg, protect, protection, land

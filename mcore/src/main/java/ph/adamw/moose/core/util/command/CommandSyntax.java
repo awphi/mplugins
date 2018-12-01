@@ -14,7 +14,7 @@ public class CommandSyntax {
 	private final boolean isOnHelp;
 
 	public CommandSyntax(String pattern, String helpText) {
-		this(pattern, helpText, false);
+		this(pattern, helpText, true);
 	}
 
 	public CommandSyntax(String pattern, String helpText, boolean isOnHelp) {
@@ -60,7 +60,7 @@ public class CommandSyntax {
 	/**
 	 * Matches raw arguments with raw strings expressed in the command syntax (i.e. not variable inputs [integer], [string] etc.)
 	 * @param args Arguments to run comparison against
-	 * @return int - How many raw string matches were present
+	 * @return int - How many raw string isValidNewStructure were present
 	 */
 	public int getArgumentMatches(String[] args) {
 		int c = 0;
