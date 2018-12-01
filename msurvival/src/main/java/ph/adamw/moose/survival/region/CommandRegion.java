@@ -168,7 +168,7 @@ public class CommandRegion extends CommandWrapper {
 	}
 
 	private void list(Player sender, int page) {
-		//TODO
+		// TODO
 	}
 
 	private void delete(Player sender, Region region) {

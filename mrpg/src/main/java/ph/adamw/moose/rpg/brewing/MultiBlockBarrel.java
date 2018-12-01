@@ -1,4 +1,4 @@
-package ph.adamw.moose.survival.brewing;
+package ph.adamw.moose.rpg.brewing;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -13,8 +13,6 @@ import org.bukkit.inventory.ItemStack;
 import ph.adamw.moose.core.MCore;
 import ph.adamw.moose.core.util.ItemUtils;
 import ph.adamw.moose.core.util.multiblock.MultiBlock;
-import ph.adamw.moose.core.util.multiblock.pattern.MultiBlockCore;
-import ph.adamw.moose.core.util.multiblock.pattern.MultiBlockElement;
 import ph.adamw.moose.core.util.multiblock.pattern.MultiBlockPattern;
 import ph.adamw.moose.core.util.multiblock.pattern.MultiBlockStairs;
 import ph.adamw.moose.survival.MSurvival;

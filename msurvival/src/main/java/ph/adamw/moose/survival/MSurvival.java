@@ -2,10 +2,8 @@ package ph.adamw.moose.survival;
 
 import lombok.Getter;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
-import ph.adamw.moose.core.MCore;
 import ph.adamw.moose.core.util.MPlugin;
 import ph.adamw.moose.core.util.command.CommandWrapper;
-import ph.adamw.moose.survival.brewing.MultiBlockBarrel;
 import ph.adamw.moose.survival.region.CommandRegion;
 import ph.adamw.moose.survival.region.Region;
 import ph.adamw.moose.survival.region.RegionHandler;
@@ -22,8 +20,6 @@ public class MSurvival extends MPlugin {
 		plugin = this;
 
 		ConfigurationSerialization.registerClass(Region.class);
-
-		MCore.getPlugin().getMultiBlockHandler().registerMultiBlock(new MultiBlockBarrel());
 
 		this.regionHandler = new RegionHandler();
 
