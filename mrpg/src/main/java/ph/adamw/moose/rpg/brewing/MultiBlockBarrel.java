@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import ph.adamw.moose.core.MCore;
@@ -15,7 +16,7 @@ import ph.adamw.moose.core.util.ItemUtils;
 import ph.adamw.moose.core.util.multiblock.MultiBlock;
 import ph.adamw.moose.core.util.multiblock.pattern.MultiBlockPattern;
 import ph.adamw.moose.core.util.multiblock.pattern.MultiBlockStairs;
-import ph.adamw.moose.survival.MSurvival;
+import ph.adamw.moose.rpg.MRpg;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +29,7 @@ public class MultiBlockBarrel extends MultiBlock implements Listener {
 	private List<ItemStack> inventory = new ArrayList<>();
 	private long lastAccess;
 
-	private static transient MultiBlockPattern PATTERN = new MultiBlockPattern(
+	private final static transient MultiBlockPattern PATTERN = new MultiBlockPattern(
 			// Bottom
 			new MultiBlockStairs(Material.OAK_STAIRS, 0, 0,0, BlockFace.SOUTH, Bisected.Half.TOP),
 			new MultiBlockStairs(Material.OAK_STAIRS, 1, 0, 0, BlockFace.SOUTH, Bisected.Half.TOP),
@@ -40,20 +41,6 @@ public class MultiBlockBarrel extends MultiBlock implements Listener {
 			new MultiBlockStairs(Material.OAK_STAIRS, 1, 1, 0, BlockFace.SOUTH, Bisected.Half.BOTTOM),
 			new MultiBlockStairs(Material.OAK_STAIRS, 1, 1, 1, BlockFace.NORTH, Bisected.Half.BOTTOM),
 			new MultiBlockStairs(Material.OAK_STAIRS, 0, 1, 1, BlockFace.NORTH, Bisected.Half.BOTTOM)
-
-			/*
-			// Bottom
-			new MultiBlockCore(Material.OAK_PLANKS),
-			new MultiBlockElement(Material.OAK_PLANKS, 1, 0, 0), //
-			new MultiBlockElement(Material.OAK_PLANKS, 1, 0, 1), //
-			new MultiBlockElement(Material.OAK_PLANKS, 0, 0, 1), //
-
-			// Top
-			new MultiBlockElement(Material.OAK_PLANKS, 0, 1, 0),
-			new MultiBlockElement(Material.OAK_PLANKS, 1, 1, 0),
-			new MultiBlockElement(Material.OAK_PLANKS, 1, 1, 1),
-			new MultiBlockElement(Material.OAK_PLANKS, 0, 1, 1)
-			*/
 		);
 
 	@Override
@@ -63,7 +50,7 @@ public class MultiBlockBarrel extends MultiBlock implements Listener {
 
 	@Override
 	public String getName() {
-		return "barrel";
+		return "fermentation barrel";
 	}
 
 	@Override
@@ -73,22 +60,26 @@ public class MultiBlockBarrel extends MultiBlock implements Listener {
 
 	@Override
 	public void onCreate(Player player) {
-		MSurvival.getPlugin().getServer().getPluginManager().registerEvents(this, MCore.getPlugin());
+		MRpg.getPlugin().getServer().getPluginManager().registerEvents(this, MCore.getPlugin());
 	}
 
 	@Override
-	public void onActivate(Player player) {
+	public void onActivate(PlayerInteractEvent event) {
 		if(openInventory == null) {
-			openInventory = Bukkit.createInventory(player, 9, "Fermenting Barrel");
+			openInventory = Bukkit.createInventory(event.getPlayer(), 9, "Fermentation Barrel");
 			ItemUtils.copyInventoryConents(inventory, openInventory);
 		}
 
-		player.openInventory(openInventory);
+		event.getPlayer().openInventory(openInventory);
 	}
 
 	@Override
-	public void onDestroy(Player player) {
-		//TODO drop all items on player
+	public void onDestroy() {
+		for(ItemStack i : inventory) {
+			getCoreLocation().getWorld().dropItem(getCoreLocation(), i);
+		}
+
+		inventory.clear();
 	}
 
 	@EventHandler

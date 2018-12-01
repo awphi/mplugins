@@ -1,14 +1,14 @@
 package ph.adamw.moose.core.util.multiblock;
 
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.type.Stairs;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
+import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
@@ -74,7 +74,8 @@ public class MultiBlockListener implements Listener {
 				}
 			}
 		} else if(event.getPlayer().getUniqueId().equals(mb.getOwner()) || mb.isTrusted(event.getPlayer())) {
-			mb.onActivate(event.getPlayer());
+			final Block core = mb.getCoreLocation().getWorld().getBlockAt(mb.getCoreLocation());
+			mb.onActivate(new PlayerInteractEvent(event.getPlayer(), event.getAction(), event.getItem(), core, event.getBlockFace()));
 			event.setCancelled(true);
 		}
 	}
@@ -93,15 +94,22 @@ public class MultiBlockListener implements Listener {
 			return;
 		}
 
-		mb.onDestroy(event.getPlayer());
 		ChatUtils.messageInfo(event.getPlayer(), "Structure Broken!", "Destroyed your {" + mb.getName() + "}.");
+		mb.destroy();
+	}
 
-		// Prune the configs of this multiblock
-		for(Location i : mb.getPattern().traversePattern(mb.getCoreLocation())) {
-			handler.getProtectionSection().set(i.toString(), null);
+	@EventHandler
+	public void onBlockFadeEvent(BlockFadeEvent event) {
+		final MultiBlock mb = getMultiBlock(event.getBlock());
+		if (mb != null) {
+			final OfflinePlayer p = Bukkit.getOfflinePlayer(mb.getOwner());
+
+			if(p.isOnline()) {
+				ChatUtils.messageInfo(p.getPlayer(), "Structure Faded!", "The {" + event.getBlock().getType().name().toLowerCase() + "} block of your {" + mb.getName() + "} faded, destroying the structure.");
+			}
+
+			mb.destroy();
 		}
-
-		handler.getMultiblocksSection().set(mb.getCoreLocation().toString(), null);
 	}
 
 	@EventHandler
