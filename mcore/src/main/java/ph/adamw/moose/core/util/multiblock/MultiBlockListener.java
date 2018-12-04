@@ -1,7 +1,5 @@
 package ph.adamw.moose.core.util.multiblock;
 
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -40,8 +38,10 @@ public class MultiBlockListener implements Listener {
 	}
 
 	private MultiBlock getMultiBlockFromCore(Block block) {
-		if(handler.getMultiblocksSection().contains(block.getLocation().toString())) {
-			return (MultiBlock) handler.getMultiblocksSection().get(block.getLocation().toString());
+		final String str = block.getLocation().toString();
+
+		if(handler.getMultiblocksSection().contains(str)) {
+			return (MultiBlock) handler.getMultiblocksSection().get(str);
 		}
 
 		return null;
@@ -73,10 +73,8 @@ public class MultiBlockListener implements Listener {
 					}
 				}
 			}
-		} else if(event.getPlayer().getUniqueId().equals(mb.getOwner()) || mb.isTrusted(event.getPlayer())) {
-			final Block core = mb.getCoreLocation().getWorld().getBlockAt(mb.getCoreLocation());
-			mb.onActivate(new PlayerInteractEvent(event.getPlayer(), event.getAction(), event.getItem(), core, event.getBlockFace()));
-			event.setCancelled(true);
+		} else if(event.getPlayer().equals(mb.getOwner()) || mb.isTrusted(event.getPlayer())) {
+			mb.onActivate(event);
 		}
 	}
 
@@ -88,7 +86,7 @@ public class MultiBlockListener implements Listener {
 			return;
 		}
 
-		if(!event.getPlayer().getUniqueId().equals(mb.getOwner())) {
+		if(!event.getPlayer().equals(mb.getOwner())) {
 			ChatUtils.messageError(event.getPlayer(), "Invalid Permissions!", "You must be the owner of this {" + mb.getName() + "} to do that.");
 			event.setCancelled(true);
 			return;
@@ -102,10 +100,9 @@ public class MultiBlockListener implements Listener {
 	public void onBlockFadeEvent(BlockFadeEvent event) {
 		final MultiBlock mb = getMultiBlock(event.getBlock());
 		if (mb != null) {
-			final OfflinePlayer p = Bukkit.getOfflinePlayer(mb.getOwner());
 
-			if(p.isOnline()) {
-				ChatUtils.messageInfo(p.getPlayer(), "Structure Faded!", "The {" + event.getBlock().getType().name().toLowerCase() + "} block of your {" + mb.getName() + "} faded, destroying the structure.");
+			if(mb.getOwner().isOnline()) {
+				ChatUtils.messageInfo(mb.getOwner().getPlayer(), "Structure Faded!", "The {" + event.getBlock().getType().name().toLowerCase() + "} block of your {" + mb.getName() + "} faded, destroying the structure.");
 			}
 
 			mb.destroy();

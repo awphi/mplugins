@@ -7,6 +7,7 @@ import ph.adamw.moose.core.util.command.CommandWrapper;
 import ph.adamw.moose.survival.region.CommandRegion;
 import ph.adamw.moose.survival.region.Region;
 import ph.adamw.moose.survival.region.RegionHandler;
+import ph.adamw.moose.survival.region.RegionRank;
 
 public class MSurvival extends MPlugin {
 	@Getter

@@ -1,10 +1,10 @@
 package ph.adamw.moose.core.util.config;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,7 +12,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-@NoArgsConstructor(access = AccessLevel.PUBLIC)
 public abstract class AutoSerializable implements ConfigurationSerializable {
 	private static List<Field> getFields(Class clazz) {
 		List<Field> fields = new ArrayList<>();
@@ -28,8 +27,10 @@ public abstract class AutoSerializable implements ConfigurationSerializable {
 	protected static <T extends AutoSerializable> T deserializeBase(Class<T> clazz, Map<String, Object> map) {
 		final T inst;
 		try {
-			inst = clazz.newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
+			final Constructor<T> cs = clazz.getDeclaredConstructor();
+			cs.setAccessible(true);
+			inst = cs.newInstance();
+		} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
 			e.printStackTrace();
 			return null;
 		}

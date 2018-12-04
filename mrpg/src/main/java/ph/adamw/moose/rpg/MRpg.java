@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import ph.adamw.moose.core.MCore;
 import ph.adamw.moose.core.util.MPlugin;
 import ph.adamw.moose.eco.MEconomy;
+import ph.adamw.moose.rpg.brewing.BrewingHandler;
 import ph.adamw.moose.rpg.brewing.MultiBlockBarrel;
 import ph.adamw.moose.rpg.brewing.MultiBlockVat;
 import ph.adamw.moose.rpg.fish.FishHandler;
@@ -19,6 +20,9 @@ public class MRpg extends MPlugin {
 
 	private FishHandler fishHandler;
 
+	@Getter
+	private BrewingHandler brewingHandler;
+
 	@Override
 	public void onEnable() {
 		plugin = this;
@@ -29,5 +33,6 @@ public class MRpg extends MPlugin {
 		MCore.getPlugin().getMultiBlockHandler().registerMultiBlock(new MultiBlockVat());
 
 		fishHandler = new FishHandler();
+		brewingHandler = new BrewingHandler();
 	}
 }

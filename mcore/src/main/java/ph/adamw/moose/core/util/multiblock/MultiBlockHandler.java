@@ -1,6 +1,7 @@
 package ph.adamw.moose.core.util.multiblock;
 
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -44,7 +45,7 @@ public class MultiBlockHandler {
 		}
 
 		instance.setCoreLocation(location);
-		instance.setOwner(player.getUniqueId());
+		instance.setOwner(Bukkit.getOfflinePlayer(player.getUniqueId()));
 
 		final String identifier = location.toString();
 		multiblocksSection.set(identifier, instance);

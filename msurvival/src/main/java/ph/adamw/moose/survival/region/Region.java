@@ -1,6 +1,7 @@
 package ph.adamw.moose.survival.region;
 
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -12,6 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 public class Region extends AutoSerializable {
 	/**
@@ -26,23 +28,28 @@ public class Region extends AutoSerializable {
 	@Getter
 	private final String name;
 
-	private Map<RegionRank, List<OfflinePlayer>> rankMap = new HashMap<>();
+	// rank name to uuids
+	private Map<String, List<String>> rankMap = new HashMap<>();
 
-	public Region(String name, Location corner1, Location corner2) {
+	Region(String name, Location corner1, Location corner2) {
 		this.name = name;
 		this.corner1 = corner1;
 		this.corner2 = corner2;
 
 		for(RegionRank i : RegionRank.VALUES) {
-			rankMap.put(i, new ArrayList<>());
+			rankMap.put(i.name(), new ArrayList<>());
 		}
+	}
+
+	private Region() {
+		this(null, null, null);
 	}
 
 	public static Region deserialize(Map<String, Object> map) {
 		return deserializeBase(Region.class, map);
 	}
 
-	public Set<Chunk> getContainedChunks() {
+	Set<Chunk> getContainedChunks() {
 		int chunkX = corner1.getChunk().getX();
 		int chunkZ = corner1.getChunk().getZ();
 
@@ -60,7 +67,7 @@ public class Region extends AutoSerializable {
 		return result;
 	}
 
-	public Set<Location> getAllCorners() {
+	Set<Location> getAllCorners() {
 		final Set<Location> result = new HashSet<>();
 		final double xdiff = Math.abs(corner1.getX() - corner2.getX());
 
@@ -73,12 +80,18 @@ public class Region extends AutoSerializable {
 	}
 
 	public List<OfflinePlayer> getRankList(RegionRank rank) {
-		return rankMap.get(rank);
+		final List<OfflinePlayer> result = new ArrayList<>();
+
+		for(String i : rankMap.get(rank.name())) {
+			result.add(Bukkit.getOfflinePlayer(UUID.fromString(i)));
+		}
+
+		return result;
 	}
 
 	public RegionRank getRankOf(OfflinePlayer player) {
 		for(RegionRank i : RegionRank.VALUES) {
-			if(rankMap.get(i).contains(player)) {
+			if(rankMap.get(i.name()).contains(player.getUniqueId().toString())) {
 				return i;
 			}
 		}
@@ -86,13 +99,13 @@ public class Region extends AutoSerializable {
 		return null;
 	}
 
-	public void remove(OfflinePlayer player) {
-		rankMap.get(getRankOf(player)).remove(player);
+	void remove(OfflinePlayer player) {
+		rankMap.get(getRankOf(player).name()).remove(player.getUniqueId().toString());
 	}
 
-	public boolean containsPlayer(OfflinePlayer player) {
+	boolean containsPlayer(OfflinePlayer player) {
 		for(RegionRank i : RegionRank.VALUES) {
-			if(rankMap.get(i).contains(player)) {
+			if(rankMap.get(i.name()).contains(player.getUniqueId().toString())) {
 				return true;
 			}
 		}
@@ -100,17 +113,17 @@ public class Region extends AutoSerializable {
 		return false;
 	}
 
-	public void setRank(OfflinePlayer player, RegionRank rank) {
+	void setRank(OfflinePlayer player, RegionRank rank) {
 		for(RegionRank i : RegionRank.VALUES) {
-			if(rankMap.get(i).remove(player)) {
+			if(rankMap.get(i.name()).remove(player.getUniqueId().toString())) {
 				break;
 			}
 		}
 
-		rankMap.get(rank).add(player);
+		rankMap.get(rank.name()).add(player.getUniqueId().toString());
 	}
 
-	public boolean containsLocation(Location loc) {
+	boolean containsLocation(Location loc) {
 		return loc.getZ() >= corner1.getZ() && loc.getZ() <= corner2.getZ() && loc.getX() >= corner1.getX() && loc.getX() <= corner2.getX();
 	}
 }

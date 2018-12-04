@@ -103,10 +103,10 @@ public class CommandRegion extends CommandWrapper {
 		}
 
 		final RegionRank rank = region.getRankOf(player).nextDown();
-		final boolean canDemote = rank == region.getRankOf(player);
+		final boolean canDemote = rank.equals(region.getRankOf(player));
 		if(canDemote) {
 			region.setRank(player, rank);
-			ChatUtils.messageInfo(sender, "Demoted Player!", "{" + player.getName() + "}'s now has {" + rank.getName() + "} access to the region.");
+			ChatUtils.messageInfo(sender, "Demoted Player!", "{" + player.getName() + "} now has {" + rank.getName() + "} access to the region.");
 		} else {
 			ChatUtils.messageError(sender, "Demotion Error!", "{" + player.getName() + "} already has the lowest region rank.");
 		}
@@ -118,11 +118,11 @@ public class CommandRegion extends CommandWrapper {
 		}
 
 		final RegionRank rank = region.getRankOf(player).nextUp();
-		final boolean canPromote = rank == region.getRankOf(player);
+		final boolean canPromote = rank.equals(region.getRankOf(player));
 
 		if(canPromote) {
 			region.setRank(player, rank);
-			ChatUtils.messageInfo(sender, "Demoted Player!", "{" + player.getName() + "}'s now has {" + rank.getName() + "} access to the region.");
+			ChatUtils.messageInfo(sender, "Demoted Player!", "{" + player.getName() + "} now has {" + rank.getName() + "} access to the region.");
 		} else {
 			ChatUtils.messageError(sender, "Demotion Error!", "{" + player.getName() + "} already has the highest region rank.");
 		}

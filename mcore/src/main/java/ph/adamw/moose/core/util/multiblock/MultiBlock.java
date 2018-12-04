@@ -8,17 +8,21 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import ph.adamw.moose.core.MCore;
-import ph.adamw.moose.core.util.chat.ChatUtils;
 import ph.adamw.moose.core.util.config.AutoSerializable;
 import ph.adamw.moose.core.util.multiblock.pattern.MultiBlockPattern;
 
 import java.util.UUID;
 
-
 public abstract class MultiBlock extends AutoSerializable {
-	@Getter
-	@Setter
-	private UUID owner;
+	private String ownerUuid;
+
+	public void setOwner(OfflinePlayer player) {
+		ownerUuid = player.getUniqueId().toString();
+	}
+
+	public OfflinePlayer getOwner() {
+		return Bukkit.getOfflinePlayer(UUID.fromString(ownerUuid));
+	}
 
 	@Getter
 	@Setter
@@ -38,7 +42,6 @@ public abstract class MultiBlock extends AutoSerializable {
 
 	public void destroy() {
 		onDestroy();
-
 		final MultiBlockHandler handler = MCore.getPlugin().getMultiBlockHandler();
 
 		// Prune the configs of this multiblock

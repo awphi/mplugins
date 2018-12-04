@@ -44,6 +44,7 @@ public class RegionListener implements Listener {
 		}
 
 		if(event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
+			event.setCancelled(true);
 			handler.defineCorner(true, event.getPlayer(), event.getClickedBlock().getLocation());
 		} else if(event.getAction().equals(Action.RIGHT_CLICK_BLOCK) && event.getHand().equals(EquipmentSlot.OFF_HAND)) {
 			handler.defineCorner(false, event.getPlayer(), event.getClickedBlock().getLocation());

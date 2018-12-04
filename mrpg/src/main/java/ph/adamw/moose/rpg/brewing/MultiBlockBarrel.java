@@ -18,10 +18,11 @@ import ph.adamw.moose.core.util.multiblock.pattern.MultiBlockPattern;
 import ph.adamw.moose.core.util.multiblock.pattern.MultiBlockStairs;
 import ph.adamw.moose.rpg.MRpg;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class MultiBlockBarrel extends MultiBlock implements Listener {
 	private transient Inventory openInventory;
@@ -76,7 +77,9 @@ public class MultiBlockBarrel extends MultiBlock implements Listener {
 	@Override
 	public void onDestroy() {
 		for(ItemStack i : inventory) {
-			getCoreLocation().getWorld().dropItem(getCoreLocation(), i);
+			if(i != null) {
+				getCoreLocation().getWorld().dropItem(getCoreLocation(), i);
+			}
 		}
 
 		inventory.clear();
@@ -94,8 +97,12 @@ public class MultiBlockBarrel extends MultiBlock implements Listener {
 
 			if(openInventory.getViewers().size() == 1) {
 				openInventory = null;
-				lastAccess = new Date().getTime();
+				lastAccess = Instant.now().getEpochSecond();
 			}
 		}
+	}
+
+	public static MultiBlockBarrel deserialize(Map<String, Object> map) {
+		return deserializeBase(MultiBlockBarrel.class, map);
 	}
 }

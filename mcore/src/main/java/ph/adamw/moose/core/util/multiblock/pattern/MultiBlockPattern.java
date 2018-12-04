@@ -5,6 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import ph.adamw.moose.core.MCore;
+import ph.adamw.moose.core.util.multiblock.MultiBlock;
 import ph.adamw.moose.core.util.multiblock.pattern.MultiBlockCore;
 import ph.adamw.moose.core.util.multiblock.pattern.MultiBlockElement;
 
