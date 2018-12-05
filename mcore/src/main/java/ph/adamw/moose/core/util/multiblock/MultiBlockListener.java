@@ -1,5 +1,6 @@
 package ph.adamw.moose.core.util.multiblock;
 
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,6 +15,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import ph.adamw.moose.core.MCore;
 import ph.adamw.moose.core.util.chat.ChatUtils;
+
+import java.util.Set;
 
 public class MultiBlockListener implements Listener {
 	private final MultiBlockHandler handler;
@@ -54,7 +57,9 @@ public class MultiBlockListener implements Listener {
 
 	@EventHandler
 	public void onInteract(PlayerInteractEvent event) {
-		if(!(event.getAction().equals(Action.RIGHT_CLICK_BLOCK) && event.getHand().equals(EquipmentSlot.OFF_HAND)) || event.getPlayer().isSneaking()) {
+		final boolean isEmpty = event.getHand().equals(EquipmentSlot.HAND) && event.getPlayer().getInventory().getItemInMainHand() == null;
+
+		if(!isEmpty || !event.getAction().equals(Action.RIGHT_CLICK_BLOCK) || event.getPlayer().isSneaking()) {
 			return;
 		}
 
@@ -62,7 +67,9 @@ public class MultiBlockListener implements Listener {
 
 		if(mb == null) {
 			for(MultiBlock i : handler.getMultiBlocks()) {
-				if(i.getPattern().isValidNewStructure(event.getClickedBlock().getLocation(), event.getClickedBlock().getType())) {
+				System.out.println(i.getName());
+				System.out.println(i.getPattern().isValidNewStructure(event.getClickedBlock().getLocation()));
+				if(i.getPattern().isValidNewStructure(event.getClickedBlock().getLocation())) {
 					final MultiBlock built = MCore.getPlugin().getMultiBlockHandler().buildAt(event.getPlayer(), i, event.getClickedBlock().getLocation());
 
 					if(built != null) {
@@ -102,7 +109,7 @@ public class MultiBlockListener implements Listener {
 		if (mb != null) {
 
 			if(mb.getOwner().isOnline()) {
-				ChatUtils.messageInfo(mb.getOwner().getPlayer(), "Structure Faded!", "The {" + event.getBlock().getType().name().toLowerCase() + "} block of your {" + mb.getName() + "} faded, destroying the structure.");
+				ChatUtils.messageInfo(mb.getOwner().getPlayer(), "Structure Broken!", "The {" + event.getBlock().getType().name().toLowerCase() + "} block of your {" + mb.getName() + "} faded.");
 			}
 
 			mb.destroy();
@@ -110,6 +117,16 @@ public class MultiBlockListener implements Listener {
 	}
 
 	@EventHandler
+	public void onPlayerInteract(PlayerInteractEvent event) {
+		// Divert fire destruction to the breakblock listener to handler destruction of multiblocks containing fire.
+		final Block block = event.getPlayer().getTargetBlock(null, 5);
+
+		if (event.getAction().equals(Action.LEFT_CLICK_BLOCK) && block.getType().equals(Material.FIRE)) {
+			onBreak(new BlockBreakEvent(block, event.getPlayer()));
+		}
+	}
+
+				@EventHandler
 	public void onEndermanPickup(EntityChangeBlockEvent event) {
 		if(getMultiBlock(event.getBlock()) != null) {
 			event.setCancelled(true);

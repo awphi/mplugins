@@ -10,9 +10,11 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.material.Cauldron;
+import org.bukkit.util.Vector;
 import ph.adamw.moose.core.util.ItemUtils;
 import ph.adamw.moose.core.util.chat.ChatUtils;
 import ph.adamw.moose.core.util.multiblock.MultiBlock;
@@ -39,7 +41,7 @@ public class MultiBlockVat extends MultiBlock {
 
 	private long startTime;
 	private BrewRecipe closestRecipe;
-	private List<ItemStack> inventory = new ArrayList<>();;
+	private List<ItemStack> inventory = new ArrayList<>();
 	private double recipeAccuracy;
 
 	@Override
@@ -66,7 +68,8 @@ public class MultiBlockVat extends MultiBlock {
 
 		// Create a new mixture
 		if(inventory.size() <= 0) {
-			if (((Cauldron) cauldron.getState().getData()).isFull()) {
+			if (!((Cauldron) cauldron.getState().getData()).isFull()) {
+				ChatUtils.messageInfo(event.getPlayer(), "Too Dry!", "Try filling up the vat and adding some ingredients first!");
 				return;
 			}
 
@@ -131,10 +134,14 @@ public class MultiBlockVat extends MultiBlock {
 			final NBTItem vial = new NBTItem(new ItemStack(Material.POTION, 1));
 			final PotionMeta meta = (PotionMeta) vial.getItem().getItemMeta();
 			meta.setColor(Color.OLIVE);
-			meta.setDisplayName(ChatColor.GRAY +  inventory.get(0).getType().name() + "y Mixture");
-			meta.setLore(new ArrayList<>(Collections.singleton(ChatColor.GRAY + "Brewed on: " + ChatColor.WHITE + new Date().toString())));
+			meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
 
-			vial.setInteger("HideFlags", 32);
+			final String str = inventory.get(0).getType().name().split("_")[0].toLowerCase().trim();
+			final String name = str.substring(0, 1).toUpperCase() + str.substring(1);
+
+			meta.setDisplayName(ChatColor.GRAY +  name + "y Mixture");
+			meta.setLore(new ArrayList<>(Collections.singleton(ChatColor.GRAY + "Mixed on: " + ChatColor.WHITE + new Date().toString())));
+
 			vial.setString(BrewingHandler.CLOSEST_RECIPE, closestRecipe.getName());
 			vial.setDouble(BrewingHandler.INGREDIENTS_RATING, recipeAccuracy);
 			vial.setDouble(BrewingHandler.COOK_RATING, cookRating);
@@ -147,7 +154,7 @@ public class MultiBlockVat extends MultiBlock {
 		if(event.getPlayer().getInventory().contains(Material.AIR)) {
 			event.getPlayer().getInventory().addItem(brew);
 		} else {
-			getCoreLocation().getWorld().dropItem(getCoreLocation(), brew);
+			getCoreLocation().getWorld().dropItemNaturally(getCoreLocation().add(new Vector(0, 1, 0)), brew);
 		}
 
 		event.getPlayer().getInventory().remove(new ItemStack(Material.GLASS_BOTTLE, 1));

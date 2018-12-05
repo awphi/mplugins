@@ -6,6 +6,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import ph.adamw.moose.core.util.config.Config;
@@ -84,7 +85,8 @@ public class BrewingHandler {
 	public static double calculateRating(double actual, double ideal, double difficulty) {
 		// Follows function: y = -|d/m * (x - m)| + 1 : d = difficulty, m = ideal, x = actual
 		// Use: https://www.desmos.com/calculator/dyalicei6u to play around with this function
-		return -Math.abs((difficulty / ideal) * (actual - ideal)) + 1;
+		final double y = -Math.abs((difficulty / ideal) * (actual - ideal)) + 1d;
+		return Math.max(0d, y);
 	}
 
 	public ItemStack createBrew(BrewRecipe recipe, long lastCheck, double ingredientsRating, double cookRating) {
@@ -114,8 +116,8 @@ public class BrewingHandler {
 		}
 
 		meta.setLore(lore);
+		meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
 
-		result.setInteger("HideFlags", 32);
 		result.setString(CLOSEST_RECIPE, recipe.getName());
 		result.setDouble(INGREDIENTS_RATING, ingredientsRating);
 		result.setDouble(COOK_RATING, cookRating);

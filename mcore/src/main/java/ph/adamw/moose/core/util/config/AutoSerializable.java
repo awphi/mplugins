@@ -1,5 +1,7 @@
 package ph.adamw.moose.core.util.config;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 import java.lang.reflect.Constructor;
@@ -12,6 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+@AllArgsConstructor(access = AccessLevel.PUBLIC)
 public abstract class AutoSerializable implements ConfigurationSerializable {
 	private static List<Field> getFields(Class clazz) {
 		List<Field> fields = new ArrayList<>();

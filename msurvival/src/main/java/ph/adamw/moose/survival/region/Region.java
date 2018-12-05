@@ -1,6 +1,7 @@
 package ph.adamw.moose.survival.region;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -15,20 +16,21 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+@NoArgsConstructor
 public class Region extends AutoSerializable {
 	/**
 	 * Expects corner1 to be bottom left and corner2 to be top right for all operations
 	 */
 	@Getter
-	private final Location corner1;
+	private Location corner1;
 
 	@Getter
-	private final Location corner2;
+	private Location corner2;
 
 	@Getter
-	private final String name;
+	private String name;
 
-	// rank name to uuids
+	// regionrank.name() to uuids of players of that regionrank
 	private Map<String, List<String>> rankMap = new HashMap<>();
 
 	Region(String name, Location corner1, Location corner2) {
@@ -39,10 +41,6 @@ public class Region extends AutoSerializable {
 		for(RegionRank i : RegionRank.VALUES) {
 			rankMap.put(i.name(), new ArrayList<>());
 		}
-	}
-
-	private Region() {
-		this(null, null, null);
 	}
 
 	public static Region deserialize(Map<String, Object> map) {

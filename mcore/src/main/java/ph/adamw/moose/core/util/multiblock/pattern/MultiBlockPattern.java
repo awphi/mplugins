@@ -16,18 +16,15 @@ import java.util.List;
 
 public class MultiBlockPattern {
 	private final MultiBlockElement[] elements;
-	private final MultiBlockElement core;
 
 	public MultiBlockPattern(MultiBlockElement core, MultiBlockElement... elements) {
-		this.core = core;
-		this.elements = elements;
+		this.elements = new MultiBlockElement[elements.length + 1];
+		this.elements[0] = core;
+
+		System.arraycopy(elements, 0, this.elements, 1, elements.length + 1 - 1);
 	}
 
-	public boolean isValidNewStructure(Location origin, Material core) {
-		if(!core.equals(this.core.getMaterial())) {
-			return false;
-		}
-
+	public boolean isValidNewStructure(Location origin) {
 		final List<Location> x = traversePattern(origin, true);
 		return x != null && x.size() == elements.length;
 	}

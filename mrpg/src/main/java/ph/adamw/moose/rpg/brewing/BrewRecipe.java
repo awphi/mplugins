@@ -5,13 +5,15 @@ import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.inventory.ItemStack;
+import ph.adamw.moose.core.util.config.AutoSerializable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @AllArgsConstructor
 @Getter
-public class BrewRecipe {
+public class BrewRecipe extends AutoSerializable {
 	// Used in finding the closest recipe, all values are pretty arbitrary and its just really for the name and flavour text
 	public static final BrewRecipe NULL_RECIPE = new BrewRecipe(
 			ChatColor.YELLOW + "Disgusting Mixture",
@@ -34,4 +36,8 @@ public class BrewRecipe {
 	private final double difficulty;
 
 	private final List<ItemStack> ingredients;
+
+	public static BrewRecipe deserialize(Map<String, Object> map) {
+		return deserializeBase(BrewRecipe.class, map);
+	}
 }
