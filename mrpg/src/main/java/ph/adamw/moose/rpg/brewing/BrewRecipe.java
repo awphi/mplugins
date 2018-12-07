@@ -16,7 +16,7 @@ import java.util.Map;
 public class BrewRecipe extends AutoSerializable {
 	// Used in finding the closest recipe, all values are pretty arbitrary and its just really for the name and flavour text
 	public static final BrewRecipe NULL_RECIPE = new BrewRecipe(
-			ChatColor.YELLOW + "Disgusting Mixture",
+			ChatColor.YELLOW + "Spoiled Brew",
 			"I wouldn't drink that if I were you.",
 			Color.OLIVE,
 			100,

@@ -65,11 +65,16 @@ public class MultiBlockVat extends MultiBlock {
 	@Override
 	public void onActivate(PlayerInteractEvent event) {
 		final Block cauldron = getCoreLocation().getWorld().getBlockAt(getCoreLocation());
+		final ItemStack itemInHand = event.getPlayer().getInventory().getItemInMainHand();
 
 		// Create a new mixture
 		if(inventory.size() <= 0) {
+			if(itemInHand.getType().equals(Material.WATER_BUCKET)) {
+				return;
+			}
+
 			if (!((Cauldron) cauldron.getState().getData()).isFull()) {
-				ChatUtils.messageInfo(event.getPlayer(), "Too Dry!", "Try filling up the vat and adding some ingredients first!");
+				ChatUtils.messageInfo(event.getPlayer(), "No Recipe!", "Try filling up the vat and adding some ingredients first!");
 				return;
 			}
 
@@ -98,7 +103,7 @@ public class MultiBlockVat extends MultiBlock {
 				return o1.getAmount() > o2.getAmount() ? 1 : -1;
 			});
 
-			// Set up all necessary data - CLOSEST RECIPE CAN BE NULL
+			// Set up all necessary data
 			startTime = Instant.now().getEpochSecond();
 			closestRecipe = MRpg.getPlugin().getBrewingHandler().getRegistry().getClosestRecipe(inventory);
 			recipeAccuracy = MRpg.getPlugin().getBrewingHandler().getRegistry().getRecipeAccuracy(closestRecipe, inventory);
@@ -109,12 +114,12 @@ public class MultiBlockVat extends MultiBlock {
 		final long cookTime = Instant.now().getEpochSecond() - startTime;
 
 		// Allow players to check cook time in seconds
-		if(event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.CLOCK)) {
+		if(itemInHand.getType().equals(Material.CLOCK)) {
 			ChatUtils.messageInfo(event.getPlayer(), "Hot hot hot!", "This mixture has been cooking for {" + cookTime + " seconds}.");
 			return;
 		}
 
-		if(!event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.GLASS_BOTTLE)) {
+		if(!itemInHand.getType().equals(Material.GLASS_BOTTLE)) {
 			return;
 		}
 
@@ -139,7 +144,7 @@ public class MultiBlockVat extends MultiBlock {
 			final String str = inventory.get(0).getType().name().split("_")[0].toLowerCase().trim();
 			final String name = str.substring(0, 1).toUpperCase() + str.substring(1);
 
-			meta.setDisplayName(ChatColor.GRAY +  name + "y Mixture");
+			meta.setDisplayName(ChatColor.GRAY + name + "y Mixture");
 			meta.setLore(new ArrayList<>(Collections.singleton(ChatColor.GRAY + "Mixed on: " + ChatColor.WHITE + new Date().toString())));
 
 			vial.setString(BrewingHandler.CLOSEST_RECIPE, closestRecipe.getName());
@@ -151,7 +156,7 @@ public class MultiBlockVat extends MultiBlock {
 		}
 
 		// Drop/give the brew + take away bottle
-		if(event.getPlayer().getInventory().contains(Material.AIR)) {
+		if(event.getPlayer().getInventory().firstEmpty() != -1) {
 			event.getPlayer().getInventory().addItem(brew);
 		} else {
 			getCoreLocation().getWorld().dropItemNaturally(getCoreLocation().add(new Vector(0, 1, 0)), brew);

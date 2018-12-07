@@ -11,6 +11,8 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import ph.adamw.moose.core.MCore;
 import ph.adamw.moose.core.util.ItemUtils;
 import ph.adamw.moose.core.util.multiblock.MultiBlock;
@@ -28,7 +30,6 @@ public class MultiBlockBarrel extends MultiBlock implements Listener {
 	private transient Inventory openInventory;
 
 	private List<ItemStack> inventory = new ArrayList<>();
-	private long lastAccess;
 
 	private final static transient MultiBlockPattern PATTERN = new MultiBlockPattern(
 			// Bottom
@@ -78,11 +79,9 @@ public class MultiBlockBarrel extends MultiBlock implements Listener {
 	public void onDestroy() {
 		for(ItemStack i : inventory) {
 			if(i != null) {
-				getCoreLocation().getWorld().dropItem(getCoreLocation(), i);
+				getCoreLocation().getWorld().dropItemNaturally(getCoreLocation().add(0d, 2d, 0d), i);
 			}
 		}
-
-		inventory.clear();
 	}
 
 	@EventHandler
@@ -94,11 +93,6 @@ public class MultiBlockBarrel extends MultiBlock implements Listener {
 		if(event.getInventory().equals(openInventory)) {
 			inventory.clear();
 			inventory.addAll(Arrays.asList(openInventory.getContents()));
-
-			if(openInventory.getViewers().size() == 1) {
-				openInventory = null;
-				lastAccess = Instant.now().getEpochSecond();
-			}
 		}
 	}
 
