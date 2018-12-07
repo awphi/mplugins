@@ -35,6 +35,7 @@ public enum MessageFormat {
 		} else {
 			x = x.replace("|header|", headerColor + header);
 		}
+
 		x = x.replace("|content|", contentColor + content);
 
 		return x;

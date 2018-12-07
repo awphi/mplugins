@@ -13,7 +13,7 @@ import java.util.Map;
 
 @AllArgsConstructor
 @Getter
-public class BrewRecipe extends AutoSerializable {
+public class BrewRecipe {
 	// Used in finding the closest recipe, all values are pretty arbitrary and its just really for the name and flavour text
 	public static final BrewRecipe NULL_RECIPE = new BrewRecipe(
 			ChatColor.YELLOW + "Spoiled Brew",
@@ -36,8 +36,4 @@ public class BrewRecipe extends AutoSerializable {
 	private final double difficulty;
 
 	private final List<ItemStack> ingredients;
-
-	public static BrewRecipe deserialize(Map<String, Object> map) {
-		return deserializeBase(BrewRecipe.class, map);
-	}
 }

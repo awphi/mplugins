@@ -3,6 +3,7 @@ package ph.adamw.moose.core.util.multiblock;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -57,9 +58,7 @@ public class MultiBlockListener implements Listener {
 
 	@EventHandler
 	public void onInteract(PlayerInteractEvent event) {
-		final boolean isEmpty = event.getHand().equals(EquipmentSlot.HAND) && event.getPlayer().getInventory().getItemInMainHand() == null;
-
-		if(!isEmpty || !event.getAction().equals(Action.RIGHT_CLICK_BLOCK) || event.getPlayer().isSneaking()) {
+		if(event.getPlayer().isSneaking() || !event.getAction().equals(Action.RIGHT_CLICK_BLOCK) || !event.getHand().equals(EquipmentSlot.HAND)) {
 			return;
 		}
 
@@ -67,8 +66,6 @@ public class MultiBlockListener implements Listener {
 
 		if(mb == null) {
 			for(MultiBlock i : handler.getMultiBlocks()) {
-				System.out.println(i.getName());
-				System.out.println(i.getPattern().isValidNewStructure(event.getClickedBlock().getLocation()));
 				if(i.getPattern().isValidNewStructure(event.getClickedBlock().getLocation())) {
 					final MultiBlock built = MCore.getPlugin().getMultiBlockHandler().buildAt(event.getPlayer(), i, event.getClickedBlock().getLocation());
 
@@ -85,7 +82,7 @@ public class MultiBlockListener implements Listener {
 		}
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onBreak(BlockBreakEvent event) {
 		final MultiBlock mb = getMultiBlock(event.getBlock());
 
@@ -126,7 +123,7 @@ public class MultiBlockListener implements Listener {
 		}
 	}
 
-				@EventHandler
+	@EventHandler
 	public void onEndermanPickup(EntityChangeBlockEvent event) {
 		if(getMultiBlock(event.getBlock()) != null) {
 			event.setCancelled(true);

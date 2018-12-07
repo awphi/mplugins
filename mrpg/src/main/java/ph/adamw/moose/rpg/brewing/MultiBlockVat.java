@@ -40,9 +40,7 @@ public class MultiBlockVat extends MultiBlock {
 	private final static transient double CAULDRON_INTERNAL_RANGE = 0.75d;
 
 	private long startTime;
-	private BrewRecipe closestRecipe;
 	private List<ItemStack> inventory = new ArrayList<>();
-	private double recipeAccuracy;
 
 	@Override
 	public MultiBlockPattern getPattern() {
@@ -73,8 +71,10 @@ public class MultiBlockVat extends MultiBlock {
 				return;
 			}
 
-			if (!((Cauldron) cauldron.getState().getData()).isFull()) {
-				ChatUtils.messageInfo(event.getPlayer(), "No Recipe!", "Try filling up the vat and adding some ingredients first!");
+			final Levelled levelled = (Levelled) cauldron.getBlockData();
+
+			if (levelled.getLevel() != levelled.getMaximumLevel()) {
+				ChatUtils.messageInfo(event.getPlayer(), "", "Try filling up the vat and adding some ingredients before you start cooking!");
 				return;
 			}
 
@@ -103,10 +103,8 @@ public class MultiBlockVat extends MultiBlock {
 				return o1.getAmount() > o2.getAmount() ? 1 : -1;
 			});
 
-			// Set up all necessary data
 			startTime = Instant.now().getEpochSecond();
-			closestRecipe = MRpg.getPlugin().getBrewingHandler().getRegistry().getClosestRecipe(inventory);
-			recipeAccuracy = MRpg.getPlugin().getBrewingHandler().getRegistry().getRecipeAccuracy(closestRecipe, inventory);
+			ChatUtils.messageInfo(event.getPlayer(), "", "Your mixture has started cooking.");
 
 			return;
 		}
@@ -115,7 +113,7 @@ public class MultiBlockVat extends MultiBlock {
 
 		// Allow players to check cook time in seconds
 		if(itemInHand.getType().equals(Material.CLOCK)) {
-			ChatUtils.messageInfo(event.getPlayer(), "Hot hot hot!", "This mixture has been cooking for {" + cookTime + " seconds}.");
+			ChatUtils.messageInfo(event.getPlayer(), "", "This mixture has been cooking for {" + cookTime + " seconds}.");
 			return;
 		}
 
@@ -125,6 +123,9 @@ public class MultiBlockVat extends MultiBlock {
 
 		// Stop regular water being extracted
 		event.setCancelled(true);
+
+		final BrewRecipe closestRecipe = MRpg.getPlugin().getBrewingHandler().getRegistry().getClosestRecipe(inventory);
+		final double recipeAccuracy = MRpg.getPlugin().getBrewingHandler().getRegistry().getRecipeAccuracy(closestRecipe, inventory);
 
 		// Cook rating 0->1 like other ratings
 		final double cookRating = BrewingHandler.calculateRating(cookTime - closestRecipe.getCookTime(), closestRecipe.getCookTime(), closestRecipe.getDifficulty());
@@ -155,6 +156,8 @@ public class MultiBlockVat extends MultiBlock {
 			brew = vial.getItem();
 		}
 
+		System.out.println(brew);
+
 		// Drop/give the brew + take away bottle
 		if(event.getPlayer().getInventory().firstEmpty() != -1) {
 			event.getPlayer().getInventory().addItem(brew);
@@ -168,6 +171,8 @@ public class MultiBlockVat extends MultiBlock {
 		final Levelled cauldronData = (Levelled) cauldron.getBlockData();
 		cauldronData.setLevel(cauldronData.getLevel() - 1);
 		cauldron.setBlockData(cauldronData);
+
+		System.out.println(cauldronData.getLevel());
 
 		if(cauldronData.getLevel() == 0) {
 			inventory.clear();
