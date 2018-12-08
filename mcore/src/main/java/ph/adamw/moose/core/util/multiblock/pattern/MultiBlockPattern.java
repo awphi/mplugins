@@ -1,17 +1,11 @@
 package ph.adamw.moose.core.util.multiblock.pattern;
 
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import ph.adamw.moose.core.MCore;
-import ph.adamw.moose.core.util.multiblock.MultiBlock;
-import ph.adamw.moose.core.util.multiblock.pattern.MultiBlockCore;
-import ph.adamw.moose.core.util.multiblock.pattern.MultiBlockElement;
+import ph.adamw.moose.core.util.multiblock.MultiBlockHandler;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 public class MultiBlockPattern {
@@ -19,8 +13,8 @@ public class MultiBlockPattern {
 
 	public MultiBlockPattern(MultiBlockElement core, MultiBlockElement... elements) {
 		this.elements = new MultiBlockElement[elements.length + 1];
-		this.elements[0] = core;
 
+		this.elements[0] = core;
 		System.arraycopy(elements, 0, this.elements, 1, elements.length + 1 - 1);
 	}
 
@@ -72,7 +66,7 @@ public class MultiBlockPattern {
 			final Block block = origin.getWorld().getBlockAt(x + realXDisplacement, y + element.getY(), z + realZDisplacement);
 
 			if(element.equals(block, rotationsFromEast)) {
-				if(creation && MCore.getPlugin().getMultiBlockHandler().getProtectionSection().contains(block.getLocation().toString())) {
+				if(creation && MultiBlockHandler.getProtectionSection().contains(block.getLocation().toString())) {
 					return null;
 				}
 

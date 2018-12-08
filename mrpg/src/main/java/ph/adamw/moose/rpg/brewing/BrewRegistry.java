@@ -1,8 +1,8 @@
 package ph.adamw.moose.rpg.brewing;
 
 import org.bukkit.inventory.ItemStack;
-import ph.adamw.moose.rpg.MRpg;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,12 +21,13 @@ public class BrewRegistry {
 	public BrewRecipe getClosestRecipe(List<ItemStack> items) {
 		BrewRecipe scorer = BrewRecipe.NULL_RECIPE;
 
-		// Needs at least a score of 2 on any brew to not return null, TODO add this to a general mrpg config
-		int cache = 1;
+		// Needs at least a rating of at least 0.2 on any brew to not return null, TODO add this to a general mrpg config
+		double cache = 0.2d;
 
 		for(BrewRecipe i : recipes.values()) {
-			int score = scoreRecipe(i, items);
-			if(scoreRecipe(i, items) > cache) {
+			double score = rateRecipeAttempt(i, items);
+
+			if(score >= cache && !i.equals(BrewRecipe.NULL_RECIPE)) {
 				scorer = i;
 				cache = score;
 			}
@@ -35,34 +36,42 @@ public class BrewRegistry {
 		return scorer;
 	}
 
-	private int scoreRecipe(BrewRecipe recipe, List<ItemStack> items) {
-		double result = 0;
+	private static double rateRecipeAttempt(BrewRecipe recipe, List<ItemStack> items) {
+		double result = 0d;
+		final List<ItemStack> is = new ArrayList<>(items);
 
 		// Adds 1 for a matching item type, removes 1 for a missing item type
 		// this punishes people for chucking in everything
 		for(ItemStack i : recipe.getIngredients()) {
-			for(ItemStack j : items) {
-				if(j.getType().equals(i.getType())) {
-					// For correct item
-					result ++;
+			ItemStack found = null;
 
-					// Scores along with correct quantities
-					result += MRpg.getPlugin().getBrewingHandler().calculateRating(j.getAmount(), i.getAmount(), recipe.getDifficulty());
-				} else {
-					result --;
+			for(ItemStack j : is) {
+				if(j.getType().equals(i.getType())) {
+					// For correct item and correct quantity rating respectively
+					result ++;
+					result += BrewingHandler.calculateRating(j.getAmount(), i.getAmount(), recipe.getDifficulty());
+
+					found = j;
+					break;
 				}
+			}
+
+			if(found == null) {
+				result --;
+			} else {
+				is.remove(found);
 			}
 		}
 
-		return (int) result;
+		return BrewingHandler.calculateRating(result, recipe.getIngredients().size() * 2, recipe.getDifficulty());
 	}
 
-	public double getRecipeAccuracy(BrewRecipe closestRecipe, List<ItemStack> items) {
+	public static double getRecipeAccuracy(BrewRecipe closestRecipe, List<ItemStack> items) {
 		if(closestRecipe == BrewRecipe.NULL_RECIPE) {
 			// Doesn't matter - just stops divide by 0 error
 			return 1d;
 		}
 
-		return MRpg.getPlugin().getBrewingHandler().calculateRating(scoreRecipe(closestRecipe, items), closestRecipe.getIngredients().size() * 2, closestRecipe.getDifficulty());
+		return rateRecipeAttempt(closestRecipe, items);
 	}
 }

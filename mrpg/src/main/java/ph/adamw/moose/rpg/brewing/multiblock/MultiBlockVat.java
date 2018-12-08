@@ -1,4 +1,4 @@
-package ph.adamw.moose.rpg.brewing;
+package ph.adamw.moose.rpg.brewing.multiblock;
 
 import de.tr7zw.itemnbtapi.NBTItem;
 import org.bukkit.ChatColor;
@@ -13,15 +13,16 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.material.Cauldron;
 import org.bukkit.util.Vector;
-import ph.adamw.moose.core.util.ItemUtils;
 import ph.adamw.moose.core.util.chat.ChatUtils;
 import ph.adamw.moose.core.util.multiblock.MultiBlock;
 import ph.adamw.moose.core.util.multiblock.pattern.MultiBlockCore;
 import ph.adamw.moose.core.util.multiblock.pattern.MultiBlockElement;
 import ph.adamw.moose.core.util.multiblock.pattern.MultiBlockPattern;
 import ph.adamw.moose.rpg.MRpg;
+import ph.adamw.moose.rpg.brewing.BrewRecipe;
+import ph.adamw.moose.rpg.brewing.BrewRegistry;
+import ph.adamw.moose.rpg.brewing.BrewingHandler;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -58,7 +59,9 @@ public class MultiBlockVat extends MultiBlock {
 	}
 
 	@Override
-	public void onCreate(Player player) {}
+	public void onCreate(Player player) {
+
+	}
 
 	@Override
 	public void onActivate(PlayerInteractEvent event) {
@@ -91,16 +94,13 @@ public class MultiBlockVat extends MultiBlock {
 				i.remove();
 			}
 
-			// Flatten the recipe
-			inventory = ItemUtils.stackify(inventory);
-
 			// Sort the recipe
 			inventory.sort((o1, o2) -> {
 				if (o1.getAmount() == o2.getAmount()) {
 					return 0;
 				}
 
-				return o1.getAmount() > o2.getAmount() ? 1 : -1;
+				return o1.getAmount() < o2.getAmount() ? 1 : -1;
 			});
 
 			startTime = Instant.now().getEpochSecond();
@@ -125,7 +125,7 @@ public class MultiBlockVat extends MultiBlock {
 		event.setCancelled(true);
 
 		final BrewRecipe closestRecipe = MRpg.getPlugin().getBrewingHandler().getRegistry().getClosestRecipe(inventory);
-		final double recipeAccuracy = MRpg.getPlugin().getBrewingHandler().getRegistry().getRecipeAccuracy(closestRecipe, inventory);
+		final double recipeAccuracy = BrewRegistry.getRecipeAccuracy(closestRecipe, inventory);
 
 		// Cook rating 0->1 like other ratings
 		final double cookRating = BrewingHandler.calculateRating(cookTime - closestRecipe.getCookTime(), closestRecipe.getCookTime(), closestRecipe.getDifficulty());
@@ -134,29 +134,28 @@ public class MultiBlockVat extends MultiBlock {
 
 		if(closestRecipe.getCookTime() == -1) {
 			// Creates the completed brew
-			brew = MRpg.getPlugin().getBrewingHandler().createBrew(closestRecipe, 1L, recipeAccuracy, cookRating);
+			brew = MRpg.getPlugin().getBrewingHandler().createBrew(closestRecipe, -1, recipeAccuracy, cookRating);
 		} else {
 			// Creates the mixture potion to be aged
 			final NBTItem vial = new NBTItem(new ItemStack(Material.POTION, 1));
+
 			final PotionMeta meta = (PotionMeta) vial.getItem().getItemMeta();
 			meta.setColor(Color.OLIVE);
 			meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
 
 			final String str = inventory.get(0).getType().name().split("_")[0].toLowerCase().trim();
 			final String name = str.substring(0, 1).toUpperCase() + str.substring(1);
-
 			meta.setDisplayName(ChatColor.GRAY + name + "y Mixture");
 			meta.setLore(new ArrayList<>(Collections.singleton(ChatColor.GRAY + "Mixed on: " + ChatColor.WHITE + new Date().toString())));
+
+			vial.getItem().setItemMeta(meta);
 
 			vial.setString(BrewingHandler.CLOSEST_RECIPE, closestRecipe.getName());
 			vial.setDouble(BrewingHandler.INGREDIENTS_RATING, recipeAccuracy);
 			vial.setDouble(BrewingHandler.COOK_RATING, cookRating);
 
-			vial.getItem().setItemMeta(meta);
 			brew = vial.getItem();
 		}
-
-		System.out.println(brew);
 
 		// Drop/give the brew + take away bottle
 		if(event.getPlayer().getInventory().firstEmpty() != -1) {
@@ -171,8 +170,6 @@ public class MultiBlockVat extends MultiBlock {
 		final Levelled cauldronData = (Levelled) cauldron.getBlockData();
 		cauldronData.setLevel(cauldronData.getLevel() - 1);
 		cauldron.setBlockData(cauldronData);
-
-		System.out.println(cauldronData.getLevel());
 
 		if(cauldronData.getLevel() == 0) {
 			inventory.clear();

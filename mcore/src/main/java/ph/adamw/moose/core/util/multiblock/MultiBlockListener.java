@@ -10,6 +10,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -20,21 +21,18 @@ import ph.adamw.moose.core.util.chat.ChatUtils;
 import java.util.Set;
 
 public class MultiBlockListener implements Listener {
-	private final MultiBlockHandler handler;
-
-	public MultiBlockListener(MultiBlockHandler handler) {
-		this.handler = handler;
+	public MultiBlockListener() {
 		MCore.getPlugin().getServer().getPluginManager().registerEvents(this, MCore.getPlugin());
 	}
 
 	private MultiBlock getMultiBlockFromElement(Block block) {
 		final String blockLocation = block.getLocation().toString();
 
-		if(handler.getProtectionSection().contains(blockLocation)) {
-			final String coreLocation = (String) handler.getProtectionSection().get(blockLocation);
+		if(MultiBlockHandler.getProtectionSection().contains(blockLocation)) {
+			final String coreLocation = (String) MultiBlockHandler.getProtectionSection().get(blockLocation);
 
-			if (handler.getMultiblocksSection().contains(coreLocation)) {
-				return (MultiBlock) handler.getMultiblocksSection().get(coreLocation);
+			if (MultiBlockHandler.getMultiblocksSection().contains(coreLocation)) {
+				return (MultiBlock) MultiBlockHandler.getMultiblocksSection().get(coreLocation);
 			}
 		}
 
@@ -44,8 +42,8 @@ public class MultiBlockListener implements Listener {
 	private MultiBlock getMultiBlockFromCore(Block block) {
 		final String str = block.getLocation().toString();
 
-		if(handler.getMultiblocksSection().contains(str)) {
-			return (MultiBlock) handler.getMultiblocksSection().get(str);
+		if(MultiBlockHandler.getMultiblocksSection().contains(str)) {
+			return (MultiBlock) MultiBlockHandler.getMultiblocksSection().get(str);
 		}
 
 		return null;
@@ -65,13 +63,12 @@ public class MultiBlockListener implements Listener {
 		final MultiBlock mb = getMultiBlockFromCore(event.getClickedBlock());
 
 		if(mb == null) {
-			for(MultiBlock i : handler.getMultiBlocks()) {
+			for(MultiBlock i : MultiBlockHandler.getMultiBlocks()) {
 				if(i.getPattern().isValidNewStructure(event.getClickedBlock().getLocation())) {
-					final MultiBlock built = MCore.getPlugin().getMultiBlockHandler().buildAt(event.getPlayer(), i, event.getClickedBlock().getLocation());
+					final MultiBlock built = MultiBlockHandler.buildAt(event.getPlayer(), i, event.getClickedBlock().getLocation());
 
 					if(built != null) {
 						ChatUtils.messageInfo(event.getPlayer(), "Structure Built!", "Created a new {" + built.getName() + "}.");
-						built.onCreate(event.getPlayer());
 						event.setCancelled(true);
 						break;
 					}
@@ -98,6 +95,16 @@ public class MultiBlockListener implements Listener {
 
 		ChatUtils.messageInfo(event.getPlayer(), "Structure Broken!", "Destroyed your {" + mb.getName() + "}.");
 		mb.destroy();
+	}
+
+	@EventHandler
+	public void onPlace(BlockPlaceEvent event) {
+		// Deals with overriding blocks like placing a block on fire or water etc.
+		final MultiBlock mb = getMultiBlock(event.getBlock());
+
+		if(mb != null) {
+			event.setCancelled(true);
+		}
 	}
 
 	@EventHandler

@@ -1,5 +1,6 @@
 package ph.adamw.moose.core.perms;
 
+import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -19,25 +20,23 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 
-public class RankHandler implements Listener {
-	private static final String MSG_FORMAT = "%1$s" + ChatColor.WHITE + " > " + ChatColor.GRAY + "%2$s";
-	private static final Rank JOIN_RANK = Rank.MEMBER;
-
-	private final Config config = new Config(MCore.getPlugin(), "ranks.yml");
+public class RankHandler {
+	@Getter
+	private static final Config config = new Config(MCore.getPlugin(), "ranks.yml");
 
 	public RankHandler() {
-		MCore.getPlugin().getServer().getPluginManager().registerEvents(this, MCore.getPlugin());
+		MCore.getPlugin().getServer().getPluginManager().registerEvents(new RankListener(), MCore.getPlugin());
 	}
 
-	public Rank getPrincipalRank(UUID uuid) {
+	public static Rank getPrincipalRank(UUID uuid) {
 		return Rank.getHighestPriority(getRanks(uuid));
 	}
 
-	public String getFormattedName(OfflinePlayer player) {
+	public static String getFormattedName(OfflinePlayer player) {
 		return getPrincipalRank(player.getUniqueId()).getColor() + player.getName();
 	}
 
-	public List<Rank> getRanks(UUID uuid) {
+	public static List<Rank> getRanks(UUID uuid) {
 		final List<Rank> ranks = new ArrayList<>();
 
 		if(!(config.get(uuid.toString()) instanceof List)) {
@@ -51,7 +50,7 @@ public class RankHandler implements Listener {
 		return ranks;
 	}
 
-	public boolean hasPermission(CommandSender sender, Rank rank) {
+	public static boolean hasPermission(CommandSender sender, Rank rank) {
 		if(sender instanceof ConsoleCommandSender) {
 			return true;
 		} else if(sender instanceof Player) {
@@ -59,20 +58,5 @@ public class RankHandler implements Listener {
 		}
 
 		return false;
-	}
-
-	@EventHandler(priority = EventPriority.HIGH)
-	public void onPlayerJoin(PlayerJoinEvent event){
-		if(!config.contains(event.getPlayer().getUniqueId().toString())) {
-			config.set(event.getPlayer().getUniqueId().toString(), new ArrayList<>(Collections.singleton(JOIN_RANK.name())));
-			MCore.getPlugin().getLogger().log(Level.INFO, "Applying rank " + JOIN_RANK.name() + " to " + event.getPlayer().getName());
-		}
-	}
-
-
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onChat(AsyncPlayerChatEvent event) {
-		final ChatColor color = getPrincipalRank(event.getPlayer().getUniqueId()).getColor();
-		event.setFormat(color + MSG_FORMAT);
 	}
 }

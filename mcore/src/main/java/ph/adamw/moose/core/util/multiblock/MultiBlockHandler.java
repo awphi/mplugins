@@ -12,29 +12,25 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class MultiBlockHandler {
-	private final MultiBlockListener listener;
+	private static final MultiBlockListener listener = new MultiBlockListener();
 
 	@Getter
-	private final Set<MultiBlock> multiBlocks = new HashSet<>();
+	private static final Set<MultiBlock> multiBlocks = new HashSet<>();
 
 	@Getter
-	private final Config config = new Config(MCore.getPlugin(), "multiblocks.yml", "multiblocks.yml");
+	private static final Config config = new Config(MCore.getPlugin(), "multiblocks.yml", "multiblocks.yml");
 
 	@Getter
-	private final ConfigurationSection multiblocksSection = config.getConfigurationSection("multiblocks");
+	private static final ConfigurationSection multiblocksSection = config.getConfigurationSection("multiblocks");
 
 	@Getter
-	private final ConfigurationSection protectionSection = config.getConfigurationSection("protection");
+	private static final ConfigurationSection protectionSection = config.getConfigurationSection("protection");
 
-	public MultiBlockHandler() {
-		this.listener = new MultiBlockListener(this);
-	}
-
-	public void registerMultiBlock(MultiBlock multiBlock) {
+	public static void registerMultiBlock(MultiBlock multiBlock) {
 		multiBlocks.add(multiBlock);
 	}
 
-	public MultiBlock buildAt(Player player, MultiBlock multiBlock, Location location) {
+	public static MultiBlock buildAt(Player player, MultiBlock multiBlock, Location location) {
 		final MultiBlock instance;
 
 		try {
@@ -53,6 +49,8 @@ public class MultiBlockHandler {
 		for(Location i : instance.getPattern().traversePattern(location)) {
 			protectionSection.set(i.toString(), identifier);
 		}
+
+		instance.onCreate(player);
 
 		return instance;
 	}

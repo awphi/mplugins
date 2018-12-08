@@ -3,7 +3,6 @@ package ph.adamw.moose.rpg.brewing;
 import de.tr7zw.itemnbtapi.NBTItem;
 import lombok.Getter;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemFlag;
@@ -12,7 +11,6 @@ import org.bukkit.inventory.meta.PotionMeta;
 import ph.adamw.moose.core.util.config.Config;
 import ph.adamw.moose.rpg.MRpg;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -23,6 +21,7 @@ public class BrewingHandler {
 	public static final String COOK_RATING = "cookTimeRating";
 	public static final String INGREDIENTS_RATING = "ingredientsRating";
 	public static final String CLOSEST_RECIPE = "closestRecipe";
+	public static final String AGE = "age";
 
 	private final Config brewsConfig = new Config(MRpg.getPlugin(), "brews.yml", "brews.yml", false);
 
@@ -63,13 +62,15 @@ public class BrewingHandler {
 		}
 	}
 
-	private String getRatingString(double rating) {
-		final StringBuilder sb = new StringBuilder();
+	private static String getRatingString(double rating) {
 		int c = 5;
+		double rounded = 0.2d * (Math.round(rating / 0.2d));
+
+		final StringBuilder sb = new StringBuilder();
 		sb.append(ChatColor.GREEN);
 
-		while(rating - 0.2 >= 0) {
-			rating -= 0.2;
+		while(rounded - 0.2 >= 0) {
+			rounded -= 0.2;
 			sb.append("■");
 			c --;
 		}
@@ -85,15 +86,15 @@ public class BrewingHandler {
 	public static double calculateRating(double actual, double ideal, double difficulty) {
 		// Follows function: y = -|d/m * (x - m)| + 1 : d = difficulty, m = ideal, x = actual
 		// Use: https://www.desmos.com/calculator/dyalicei6u to play around with this function
-		final double y = -Math.abs((difficulty / ideal) * (actual - ideal)) + 1d;
+		final double y = -Math.abs((difficulty / ideal) * Math.abs(actual - ideal)) + 1d;
 		return Math.max(0d, y);
 	}
 
-	public ItemStack createBrew(BrewRecipe recipe, long lastCheck, double ingredientsRating, double cookRating) {
+	public ItemStack createBrew(BrewRecipe recipe, int age, double ingredientsRating, double cookRating) {
+		final double ageRating = recipe.getCookTime() == - 1 ? 1.0d : calculateRating(age, recipe.getAgeTime(), recipe.getDifficulty());
+
 		final NBTItem result = new NBTItem(new ItemStack(Material.POTION, 1));
 		final PotionMeta meta = (PotionMeta) result.getItem().getItemMeta();
-		meta.setColor(recipe.getColor());
-		meta.setDisplayName(ChatColor.GOLD + recipe.getName());
 
 		List<String> lore = new ArrayList<>();
 		lore.add(ChatColor.GRAY + recipe.getFlavourText());
@@ -101,14 +102,7 @@ public class BrewingHandler {
 		lore.add(ChatColor.GRAY + "Ingredients: " + getRatingString(ingredientsRating));
 		lore.add(ChatColor.GRAY + "Cooking: " + getRatingString(cookRating));
 
-		if(recipe.getAgeTime() == -1) {
-			result.setDouble(AGE_RATING, 1.0d);
-			lore.add(ChatColor.GRAY + "Aging: " + getRatingString(1.0d));
-		} else {
-			final double rating = calculateRating(Instant.now().getEpochSecond() - lastCheck, recipe.getCookTime(), recipe.getDifficulty());
-			result.setDouble(AGE_RATING, rating);
-			lore.add(ChatColor.GRAY + "Aging: " + getRatingString(rating));
-		}
+		lore.add(ChatColor.GRAY + "Aging: " + getRatingString(ageRating));
 
 		if(recipe == BrewRecipe.NULL_RECIPE) {
 			// Only display flavour text + brewed on for a null recipe when aged
@@ -116,13 +110,17 @@ public class BrewingHandler {
 		}
 
 		meta.setLore(lore);
+		meta.setColor(recipe.getColor());
+		meta.setDisplayName(ChatColor.GOLD + recipe.getName());
 		meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
 
+		result.getItem().setItemMeta(meta);
+
+		result.setDouble(AGE_RATING, ageRating);
 		result.setString(CLOSEST_RECIPE, recipe.getName());
 		result.setDouble(INGREDIENTS_RATING, ingredientsRating);
 		result.setDouble(COOK_RATING, cookRating);
-
-		result.getItem().setItemMeta(meta);
+		result.setInteger(AGE, age);
 
 		return result.getItem();
 	}

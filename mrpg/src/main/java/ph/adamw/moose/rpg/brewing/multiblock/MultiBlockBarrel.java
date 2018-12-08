@@ -1,11 +1,13 @@
-package ph.adamw.moose.rpg.brewing;
+package ph.adamw.moose.rpg.brewing.multiblock;
 
+import de.tr7zw.itemnbtapi.NBTItem;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Bisected;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -19,6 +21,8 @@ import ph.adamw.moose.core.util.multiblock.MultiBlock;
 import ph.adamw.moose.core.util.multiblock.pattern.MultiBlockPattern;
 import ph.adamw.moose.core.util.multiblock.pattern.MultiBlockStairs;
 import ph.adamw.moose.rpg.MRpg;
+import ph.adamw.moose.rpg.brewing.BrewRecipe;
+import ph.adamw.moose.rpg.brewing.BrewingHandler;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -26,10 +30,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class MultiBlockBarrel extends MultiBlock implements Listener {
+public class MultiBlockBarrel extends MultiBlock {
 	private transient Inventory openInventory;
+	private transient BukkitTask task;
 
 	private List<ItemStack> inventory = new ArrayList<>();
+	private long lastAccess;
 
 	private final static transient MultiBlockPattern PATTERN = new MultiBlockPattern(
 			// Bottom
@@ -62,17 +68,30 @@ public class MultiBlockBarrel extends MultiBlock implements Listener {
 
 	@Override
 	public void onCreate(Player player) {
-		MRpg.getPlugin().getServer().getPluginManager().registerEvents(this, MCore.getPlugin());
+
 	}
 
 	@Override
 	public void onActivate(PlayerInteractEvent event) {
+		// Performed on first load since last restart
 		if(openInventory == null) {
 			openInventory = Bukkit.createInventory(event.getPlayer(), 9, "Fermentation Barrel");
 			ItemUtils.copyInventoryConents(inventory, openInventory);
 		}
 
+		ageBrews();
 		event.getPlayer().openInventory(openInventory);
+
+		if(task == null) {
+			// Every 3 seconds (60 ticks)
+			task = new BukkitRunnable() {
+				@Override
+				public void run() {
+					ageBrews();
+					lastAccess = Instant.now().getEpochSecond();
+				}
+			}.runTaskTimer(MRpg.getPlugin(), 60L, 60L);
+		}
 	}
 
 	@Override
@@ -84,15 +103,48 @@ public class MultiBlockBarrel extends MultiBlock implements Listener {
 		}
 	}
 
-	@EventHandler
+	private void ageBrews() {
+		final ItemStack[] stacks = openInventory.getStorageContents();
+
+		for(int i = 0; i < stacks.length; i ++) {
+			if(stacks[i] != null && stacks[i].getType() != Material.AIR) {
+				final NBTItem item = new NBTItem(stacks[i]);
+				if(!item.hasKey(BrewingHandler.CLOSEST_RECIPE)) {
+					continue;
+				}
+
+				final BrewRecipe recipe = MRpg.getPlugin().getBrewingHandler().getRegistry().get(item.getString(BrewingHandler.CLOSEST_RECIPE));
+				final double cookRating = item.getDouble(BrewingHandler.COOK_RATING);
+				final double ingredientsRating = item.getDouble(BrewingHandler.INGREDIENTS_RATING);
+
+				int age = (int) Math.abs(Instant.now().getEpochSecond() - lastAccess);
+
+				if(item.hasKey(BrewingHandler.AGE)) {
+					age += item.getInteger(BrewingHandler.AGE);
+				}
+
+				openInventory.setItem(i, MRpg.getPlugin().getBrewingHandler().createBrew(recipe, age, ingredientsRating, cookRating));
+			}
+		}
+
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onInventoryClosed(InventoryCloseEvent event) {
 		if(openInventory == null) {
 			return;
 		}
 
-		if(event.getInventory().equals(openInventory)) {
+		if(openInventory.equals(event.getInventory())) {
 			inventory.clear();
 			inventory.addAll(Arrays.asList(openInventory.getContents()));
+
+			lastAccess = Instant.now().getEpochSecond();
+
+			if(openInventory.getViewers().size() == 1) {
+				task.cancel();
+				task = null;
+			}
 		}
 	}
 

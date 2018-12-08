@@ -8,6 +8,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 import ph.adamw.moose.core.MCore;
 import ph.adamw.moose.core.perms.Rank;
+import ph.adamw.moose.core.perms.RankHandler;
 import ph.adamw.moose.core.util.chat.ChatUtils;
 
 import java.util.logging.Level;
@@ -71,7 +72,7 @@ public abstract class CommandWrapper implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if(!MCore.getPlugin().getRankHandler().hasPermission(sender, rank)) {
+		if(!RankHandler.hasPermission(sender, rank)) {
 			ChatUtils.messageNoPerms(sender);
 			return true;
 		}

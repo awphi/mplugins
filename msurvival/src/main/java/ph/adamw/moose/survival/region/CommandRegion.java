@@ -18,7 +18,6 @@ import java.util.List;
 
 public class CommandRegion extends CommandWrapper {
 	private final RegionHandler regionHandler = MSurvival.getPlugin().getRegionHandler();
-	private final RankHandler rankHandler = MCore.getPlugin().getRankHandler();
 
 	public CommandRegion() {
 		super("region", new CommandSyntax[] {
@@ -216,7 +215,7 @@ public class CommandRegion extends CommandWrapper {
 			info.add(ChatColor.GRAY + " " + i.getName() + "s:");
 
 			for (OfflinePlayer j : region.getRankList(i)) {
-				info.add(ChatColor.GRAY + "  - " + rankHandler.getFormattedName(j));
+				info.add(ChatColor.GRAY + "  - " + RankHandler.getFormattedName(j));
 			}
 		}
 

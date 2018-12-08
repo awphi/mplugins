@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import ph.adamw.moose.core.MCore;
 import ph.adamw.moose.core.perms.Rank;
+import ph.adamw.moose.core.perms.RankHandler;
 import ph.adamw.moose.core.util.chat.ChatUtils;
 import ph.adamw.moose.core.util.command.CommandSyntax;
 import ph.adamw.moose.core.util.command.CommandWrapper;
@@ -37,7 +38,7 @@ public class CommandRank extends CommandWrapper {
 		}
 
 		final List<String> list = new ArrayList<>();
-		final List<Rank> ranks = MCore.getPlugin().getRankHandler().getRanks(check.getUniqueId());
+		final List<Rank> ranks = RankHandler.getRanks(check.getUniqueId());
 
 		if(ranks.size() <= 0) {
 			list.add(" {" + check.getName() + "} doesn't have any ranks!");

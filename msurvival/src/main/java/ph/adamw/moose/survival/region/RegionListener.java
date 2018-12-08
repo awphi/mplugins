@@ -15,13 +15,14 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import ph.adamw.moose.core.MCore;
 import ph.adamw.moose.core.util.chat.ChatUtils;
+import ph.adamw.moose.survival.MSurvival;
 
 public class RegionListener implements Listener {
 	private final RegionHandler handler;
 
 	public RegionListener(RegionHandler handler) {
 		this.handler = handler;
-		MCore.getPlugin().getServer().getPluginManager().registerEvents(this, MCore.getPlugin());
+		MSurvival.getPlugin().getServer().getPluginManager().registerEvents(this, MSurvival.getPlugin());
 	}
 
 	private void blockEvent(Cancellable event, Location location, Player player, RegionRank rank) {
