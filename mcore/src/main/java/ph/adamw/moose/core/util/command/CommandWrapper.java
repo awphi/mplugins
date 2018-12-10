@@ -40,7 +40,7 @@ public abstract class CommandWrapper implements CommandExecutor {
 			plugin.getLogger().log(Level.SEVERE, "Failed to registerMultiBlock command: " + wrapper.base + " did you add it to plugin.yml?");
 		} else {
 			command.setExecutor(wrapper);
-			MCore.getPlugin().getCommandRegistry().register(wrapper);
+			CommandRegistry.register(wrapper);
 		}
 	}
 

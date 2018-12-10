@@ -10,4 +10,4 @@ commands:
   region:
     description: Regions
     usage: /region
-    alises: rg, protect, protection, land
+    alises: [rg, protect, protection, land]

@@ -2,11 +2,10 @@ package ph.adamw.moose.rpg;
 
 import lombok.Getter;
 import org.bukkit.Bukkit;
-import ph.adamw.moose.core.MCore;
 import ph.adamw.moose.core.util.MPlugin;
 import ph.adamw.moose.core.util.multiblock.MultiBlockHandler;
 import ph.adamw.moose.eco.MEconomy;
-import ph.adamw.moose.rpg.brewing.BrewingHandler;
+import ph.adamw.moose.rpg.brewing.BrewHandler;
 import ph.adamw.moose.rpg.brewing.multiblock.MultiBlockBarrel;
 import ph.adamw.moose.rpg.brewing.multiblock.MultiBlockVat;
 import ph.adamw.moose.rpg.fish.FishHandler;
@@ -21,7 +20,7 @@ public class MRpg extends MPlugin {
 	private FishHandler fishHandler;
 
 	@Getter
-	private BrewingHandler brewingHandler;
+	private BrewHandler brewHandler;
 
 	@Override
 	public void onEnable() {
@@ -33,6 +32,6 @@ public class MRpg extends MPlugin {
 		MultiBlockHandler.registerMultiBlock(new MultiBlockVat());
 
 		fishHandler = new FishHandler();
-		brewingHandler = new BrewingHandler();
+		brewHandler = new BrewHandler();
 	}
 }

@@ -22,8 +22,9 @@ public class BrewRecipe {
 			100,
 			100,
 			1,
+			new ArrayList<>(),
+			//TODO add some negative effects for spoiled brews here.
 			new ArrayList<>()
-
 	);
 
 	private final String name;
@@ -36,4 +37,5 @@ public class BrewRecipe {
 	private final double difficulty;
 
 	private final List<ItemStack> ingredients;
+	private final List<String> effects;
 }

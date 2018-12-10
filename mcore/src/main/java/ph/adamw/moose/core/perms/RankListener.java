@@ -13,10 +13,10 @@ import java.util.Collections;
 import java.util.logging.Level;
 
 public class RankListener implements Listener {
-	private static final String MSG_FORMAT = "%1$s" + ChatColor.WHITE + " > " + ChatColor.GRAY + "%2$s";
+	private static final String MSG_FORMAT = "%1$s" + ChatColor.GRAY + " > " + ChatColor.WHITE + "%2$s";
 	private static final Rank JOIN_RANK = Rank.MEMBER;
 
-	@EventHandler(priority = EventPriority.HIGH)
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerJoin(PlayerJoinEvent event){
 		if(!RankHandler.getConfig().contains(event.getPlayer().getUniqueId().toString())) {
 			RankHandler.getConfig().set(event.getPlayer().getUniqueId().toString(), new ArrayList<>(Collections.singleton(JOIN_RANK.name())));
@@ -24,8 +24,7 @@ public class RankListener implements Listener {
 		}
 	}
 
-
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(priority = EventPriority.LOW)
 	public void onChat(AsyncPlayerChatEvent event) {
 		final ChatColor color = RankHandler.getPrincipalRank(event.getPlayer().getUniqueId()).getColor();
 		event.setFormat(color + MSG_FORMAT);

@@ -19,10 +19,9 @@ import ph.adamw.moose.core.util.multiblock.MultiBlock;
 import ph.adamw.moose.core.util.multiblock.pattern.MultiBlockCore;
 import ph.adamw.moose.core.util.multiblock.pattern.MultiBlockElement;
 import ph.adamw.moose.core.util.multiblock.pattern.MultiBlockPattern;
-import ph.adamw.moose.rpg.MRpg;
 import ph.adamw.moose.rpg.brewing.BrewRecipe;
 import ph.adamw.moose.rpg.brewing.BrewRegistry;
-import ph.adamw.moose.rpg.brewing.BrewingHandler;
+import ph.adamw.moose.rpg.brewing.BrewHandler;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -124,22 +123,22 @@ public class MultiBlockVat extends MultiBlock {
 		// Stop regular water being extracted
 		event.setCancelled(true);
 
-		final BrewRecipe closestRecipe = MRpg.getPlugin().getBrewingHandler().getRegistry().getClosestRecipe(inventory);
+		final BrewRecipe closestRecipe = BrewRegistry.getClosestRecipe(inventory);
 		final double recipeAccuracy = BrewRegistry.getRecipeAccuracy(closestRecipe, inventory);
 
 		// Cook rating 0->1 like other ratings
-		final double cookRating = BrewingHandler.calculateRating(cookTime - closestRecipe.getCookTime(), closestRecipe.getCookTime(), closestRecipe.getDifficulty());
+		final double cookRating = BrewHandler.calculateRating(cookTime - closestRecipe.getCookTime(), closestRecipe.getCookTime(), closestRecipe.getDifficulty());
 
-		final ItemStack brew;
+		final ItemStack item;
 
-		if(closestRecipe.getCookTime() == -1) {
+		if(closestRecipe.getAgeTime() == -1) {
 			// Creates the completed brew
-			brew = MRpg.getPlugin().getBrewingHandler().createBrew(closestRecipe, -1, recipeAccuracy, cookRating);
+			item = BrewHandler.createBrew(closestRecipe, -1, recipeAccuracy, cookRating);
 		} else {
 			// Creates the mixture potion to be aged
-			final NBTItem vial = new NBTItem(new ItemStack(Material.POTION, 1));
+			final NBTItem mixture = new NBTItem(new ItemStack(Material.POTION, 1));
 
-			final PotionMeta meta = (PotionMeta) vial.getItem().getItemMeta();
+			final PotionMeta meta = (PotionMeta) mixture.getItem().getItemMeta();
 			meta.setColor(Color.OLIVE);
 			meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
 
@@ -148,20 +147,20 @@ public class MultiBlockVat extends MultiBlock {
 			meta.setDisplayName(ChatColor.GRAY + name + "y Mixture");
 			meta.setLore(new ArrayList<>(Collections.singleton(ChatColor.GRAY + "Mixed on: " + ChatColor.WHITE + new Date().toString())));
 
-			vial.getItem().setItemMeta(meta);
+			mixture.getItem().setItemMeta(meta);
 
-			vial.setString(BrewingHandler.CLOSEST_RECIPE, closestRecipe.getName());
-			vial.setDouble(BrewingHandler.INGREDIENTS_RATING, recipeAccuracy);
-			vial.setDouble(BrewingHandler.COOK_RATING, cookRating);
+			mixture.setString(BrewHandler.CLOSEST_RECIPE, closestRecipe.getName());
+			mixture.setDouble(BrewHandler.INGREDIENTS_RATING, recipeAccuracy);
+			mixture.setDouble(BrewHandler.COOK_RATING, cookRating);
 
-			brew = vial.getItem();
+			item = mixture.getItem();
 		}
 
 		// Drop/give the brew + take away bottle
 		if(event.getPlayer().getInventory().firstEmpty() != -1) {
-			event.getPlayer().getInventory().addItem(brew);
+			event.getPlayer().getInventory().addItem(item);
 		} else {
-			getCoreLocation().getWorld().dropItemNaturally(getCoreLocation().add(new Vector(0, 1, 0)), brew);
+			getCoreLocation().getWorld().dropItemNaturally(getCoreLocation().add(new Vector(0, 1, 0)), item);
 		}
 
 		event.getPlayer().getInventory().remove(new ItemStack(Material.GLASS_BOTTLE, 1));

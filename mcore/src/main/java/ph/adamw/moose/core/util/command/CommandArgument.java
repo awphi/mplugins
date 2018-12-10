@@ -125,7 +125,7 @@ public abstract class CommandArgument<T> {
 
 			@Override
 			public CommandWrapper getObjectFromArg(String arg, CommandSender sender) {
-				return MCore.getPlugin().getCommandRegistry().getWrapper(arg);
+				return CommandRegistry.getWrapper(arg);
 			}
 
 			@Override

@@ -24,10 +24,6 @@ public class RankHandler {
 	@Getter
 	private static final Config config = new Config(MCore.getPlugin(), "ranks.yml");
 
-	public RankHandler() {
-		MCore.getPlugin().getServer().getPluginManager().registerEvents(new RankListener(), MCore.getPlugin());
-	}
-
 	public static Rank getPrincipalRank(UUID uuid) {
 		return Rank.getHighestPriority(getRanks(uuid));
 	}

@@ -8,21 +8,20 @@ import org.bukkit.block.data.Bisected;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
-import ph.adamw.moose.core.MCore;
 import ph.adamw.moose.core.util.ItemUtils;
 import ph.adamw.moose.core.util.multiblock.MultiBlock;
 import ph.adamw.moose.core.util.multiblock.pattern.MultiBlockPattern;
 import ph.adamw.moose.core.util.multiblock.pattern.MultiBlockStairs;
 import ph.adamw.moose.rpg.MRpg;
 import ph.adamw.moose.rpg.brewing.BrewRecipe;
-import ph.adamw.moose.rpg.brewing.BrewingHandler;
+import ph.adamw.moose.rpg.brewing.BrewHandler;
+import ph.adamw.moose.rpg.brewing.BrewRegistry;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -109,27 +108,26 @@ public class MultiBlockBarrel extends MultiBlock {
 		for(int i = 0; i < stacks.length; i ++) {
 			if(stacks[i] != null && stacks[i].getType() != Material.AIR) {
 				final NBTItem item = new NBTItem(stacks[i]);
-				if(!item.hasKey(BrewingHandler.CLOSEST_RECIPE)) {
+				if(!item.hasKey(BrewHandler.CLOSEST_RECIPE)) {
 					continue;
 				}
 
-				final BrewRecipe recipe = MRpg.getPlugin().getBrewingHandler().getRegistry().get(item.getString(BrewingHandler.CLOSEST_RECIPE));
-				final double cookRating = item.getDouble(BrewingHandler.COOK_RATING);
-				final double ingredientsRating = item.getDouble(BrewingHandler.INGREDIENTS_RATING);
+				final BrewRecipe recipe = BrewRegistry.getBrew(item.getString(BrewHandler.CLOSEST_RECIPE));
+				final double cookRating = item.getDouble(BrewHandler.COOK_RATING);
+				final double ingredientsRating = item.getDouble(BrewHandler.INGREDIENTS_RATING);
 
 				int age = (int) Math.abs(Instant.now().getEpochSecond() - lastAccess);
 
-				if(item.hasKey(BrewingHandler.AGE)) {
-					age += item.getInteger(BrewingHandler.AGE);
+				if(item.hasKey(BrewHandler.AGE)) {
+					age += item.getInteger(BrewHandler.AGE);
 				}
 
-				openInventory.setItem(i, MRpg.getPlugin().getBrewingHandler().createBrew(recipe, age, ingredientsRating, cookRating));
+				openInventory.setItem(i, BrewHandler.createBrew(recipe, age, ingredientsRating, cookRating));
 			}
 		}
 
 	}
 
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onInventoryClosed(InventoryCloseEvent event) {
 		if(openInventory == null) {
 			return;

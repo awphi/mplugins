@@ -40,7 +40,7 @@ public class Config extends YamlConfiguration {
 		this.file = new File(plugin.getDataFolder(), fileName);
 		this.autoSave = autoSave;
 
-		MCore.getPlugin().getConfigRegistry().register(plugin, this);
+		ConfigRegistry.register(plugin, this);
 
 		reload();
 	}

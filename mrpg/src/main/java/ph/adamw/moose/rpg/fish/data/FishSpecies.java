@@ -118,7 +118,7 @@ public enum FishSpecies {
 			final FishEffects effects = FishSpecies.get(wrapper.getInteger("fishSpecies")).getEffects();
 
 			for(PotionEffectType type : effects.getEffects()) {
-				player.addPotionEffect(new PotionEffect(type, length, potency));
+				player.addPotionEffect(new PotionEffect(type, length, potency), true);
 			}
 		}
 

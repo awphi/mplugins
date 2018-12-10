@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Map;
 
 public class CommandRegistry {
-	private Map<String, CommandWrapper> map = new HashMap<>();
+	private static Map<String, CommandWrapper> map = new HashMap<>();
 
-	public void register(CommandWrapper wrapper) {
+	public static void register(CommandWrapper wrapper) {
 		map.put(wrapper.getBase().toLowerCase(), wrapper);
 		final List<String> aliases = Bukkit.getPluginCommand(wrapper.getBase()).getAliases();
 
@@ -23,15 +23,15 @@ public class CommandRegistry {
 		}
 	}
 
-	public void deregister(String str) {
+	public static void deregister(String str) {
 		map.remove(str.toLowerCase());
 	}
 
-	public boolean isRegistered(String arg) {
+	public static boolean isRegistered(String arg) {
 		return map.containsKey(arg.toLowerCase());
 	}
 
-	public CommandWrapper getWrapper(String arg) {
+	public static CommandWrapper getWrapper(String arg) {
 		return map.get(arg.toLowerCase());
 	}
 }

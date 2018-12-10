@@ -1,6 +1,7 @@
 package ph.adamw.moose.rpg.brewing;
 
 import org.bukkit.inventory.ItemStack;
+import ph.adamw.moose.rpg.brewing.effect.BrewEffect;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,17 +9,32 @@ import java.util.List;
 import java.util.Map;
 
 public class BrewRegistry {
-	private final Map<String, BrewRecipe> recipes = new HashMap<>();
+	private static final Map<String, BrewRecipe> recipes = new HashMap<>();
+	private static final Map<String, BrewEffect> customEffects = new HashMap<>();
 
-	public void register(BrewRecipe recipe) {
+	public static void registerBrew(BrewRecipe recipe) {
 		recipes.put(recipe.getName(), recipe);
 	}
 
-	public BrewRecipe get(String name) {
+	public static BrewEffect getCustomEffect(String name) {
+		name = name.toUpperCase();
+
+		if(customEffects.containsKey(name)) {
+			return customEffects.get(name);
+		}
+
+		return null;
+	}
+
+	public static void registerCustomEffect(BrewEffect effect) {
+		customEffects.put(effect.getName().toUpperCase(), effect);
+	}
+
+	public static BrewRecipe getBrew(String name) {
 		return recipes.get(name);
 	}
 
-	public BrewRecipe getClosestRecipe(List<ItemStack> items) {
+	public static BrewRecipe getClosestRecipe(List<ItemStack> items) {
 		BrewRecipe scorer = BrewRecipe.NULL_RECIPE;
 
 		// Needs at least a rating of at least 0.2 on any brew to not return null, TODO add this to a general mrpg config
@@ -36,6 +52,15 @@ public class BrewRegistry {
 		return scorer;
 	}
 
+	public static double getRecipeAccuracy(BrewRecipe closestRecipe, List<ItemStack> items) {
+		if(closestRecipe == BrewRecipe.NULL_RECIPE) {
+			// Doesn't matter - just stops divide by 0 error
+			return 1d;
+		}
+
+		return rateRecipeAttempt(closestRecipe, items);
+	}
+
 	private static double rateRecipeAttempt(BrewRecipe recipe, List<ItemStack> items) {
 		double result = 0d;
 		final List<ItemStack> is = new ArrayList<>(items);
@@ -49,7 +74,7 @@ public class BrewRegistry {
 				if(j.getType().equals(i.getType())) {
 					// For correct item and correct quantity rating respectively
 					result ++;
-					result += BrewingHandler.calculateRating(j.getAmount(), i.getAmount(), recipe.getDifficulty());
+					result += BrewHandler.calculateRating(j.getAmount(), i.getAmount(), recipe.getDifficulty());
 
 					found = j;
 					break;
@@ -63,15 +88,6 @@ public class BrewRegistry {
 			}
 		}
 
-		return BrewingHandler.calculateRating(result, recipe.getIngredients().size() * 2, recipe.getDifficulty());
-	}
-
-	public static double getRecipeAccuracy(BrewRecipe closestRecipe, List<ItemStack> items) {
-		if(closestRecipe == BrewRecipe.NULL_RECIPE) {
-			// Doesn't matter - just stops divide by 0 error
-			return 1d;
-		}
-
-		return rateRecipeAttempt(closestRecipe, items);
+		return BrewHandler.calculateRating(result, recipe.getIngredients().size() * 2, recipe.getDifficulty());
 	}
 }

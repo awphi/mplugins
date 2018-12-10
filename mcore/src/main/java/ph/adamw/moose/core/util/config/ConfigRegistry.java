@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.logging.Level;
 
 public class ConfigRegistry {
-	private final HashMap<MPlugin, List<Config>> map = new HashMap<>();
+	private static final HashMap<MPlugin, List<Config>> map = new HashMap<>();
 
-	public void register(MPlugin plugin, Config config) {
+	public static void register(MPlugin plugin, Config config) {
 		if(!map.containsKey(plugin)) {
 			map.put(plugin, new ArrayList<>());
 		}
@@ -18,7 +18,7 @@ public class ConfigRegistry {
 		map.get(plugin).add(config);
 	}
 
-	public void saveAll(MPlugin plugin) {
+	public static void saveAll(MPlugin plugin) {
 		if(!map.containsKey(plugin)) {
 			return;
 		}
