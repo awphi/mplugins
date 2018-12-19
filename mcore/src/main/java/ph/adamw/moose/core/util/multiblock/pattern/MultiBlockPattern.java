@@ -66,7 +66,7 @@ public class MultiBlockPattern {
 			final Block block = origin.getWorld().getBlockAt(x + realXDisplacement, y + element.getY(), z + realZDisplacement);
 
 			if(element.equals(block, rotationsFromEast)) {
-				if(creation && MultiBlockHandler.getProtectionSection().contains(block.getLocation().toString())) {
+				if(creation && MultiBlockHandler.getMultiBlock(block) != null) {
 					return null;
 				}
 

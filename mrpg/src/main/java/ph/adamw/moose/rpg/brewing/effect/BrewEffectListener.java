@@ -37,9 +37,19 @@ public class BrewEffectListener implements Listener {
 			final String[] split = i.split(";");
 			final String[] namePotency = split[0].split("\\s+");
 
+			final double ageRating = nbt.getDouble(BrewHandler.AGE_RATING);
+			final double brewAccuracy;
+
+			if(ageRating != -1d) {
+				brewAccuracy = (nbt.getDouble(BrewHandler.COOK_RATING) + nbt.getDouble(BrewHandler.INGREDIENTS_RATING)) / 2d;
+			} else {
+				brewAccuracy = (ageRating + nbt.getDouble(BrewHandler.COOK_RATING) + nbt.getDouble(BrewHandler.INGREDIENTS_RATING)) / 3d;
+			}
+
+
 			final String name = namePotency[0].toUpperCase();
-			final int potency = Integer.valueOf(namePotency[1]);
-			final int length = (int) (Double.parseDouble(split[1]) * 60d * 20d);
+			final int potency = (int) Math.round(Integer.valueOf(namePotency[1]) * brewAccuracy);
+			final int length = (int) (Double.parseDouble(split[1]) * 60d * 20d * brewAccuracy);
 
 			final BrewEffect effect = BrewRegistry.getCustomEffect(name);
 

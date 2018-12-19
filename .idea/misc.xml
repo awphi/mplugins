@@ -9,6 +9,7 @@
     </option>
     <option name="ignoredFiles">
       <set>
+        <option value="$PROJECT_DIR$/meconomy/pom.xml" />
         <option value="$PROJECT_DIR$/mutils/pom.xml" />
       </set>
     </option>

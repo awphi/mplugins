@@ -26,7 +26,7 @@ public class CommandRegion extends CommandWrapper {
 				new CommandSyntax("list", "View all of your regions."),
 				new CommandSyntax("list [integer]", "View a page of your region list.", false),
 
-				new CommandSyntax("create [string]", "Create a new region using your defined corners."),
+				new CommandSyntax("constructNew [string]", "Create a new region using your defined corners."),
 
 				new CommandSyntax("delete", "Delete your current region."),
 				new CommandSyntax("delete [region]", "Delete one of your regions."),
@@ -53,7 +53,7 @@ public class CommandRegion extends CommandWrapper {
 			case "list":
 			case "list [integer]": list((Player) sender, args.length == 1 ? 1 : (int) args[1]); break;
 
-			case "create [string]": create((Player) sender, (String) args[1]); break;
+			case "constructNew [string]": create((Player) sender, (String) args[1]); break;
 			case "delete":
 			case "delete [region]": delete((Player) sender, args.length == 1 ? currentRegion : (Region) args[1]); break;
 

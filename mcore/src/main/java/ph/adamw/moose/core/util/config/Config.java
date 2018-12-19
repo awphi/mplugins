@@ -2,6 +2,7 @@ package ph.adamw.moose.core.util.config;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import lombok.Getter;

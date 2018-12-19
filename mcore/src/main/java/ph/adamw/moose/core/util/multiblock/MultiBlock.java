@@ -8,17 +8,14 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.plugin.Plugin;
 import ph.adamw.moose.core.MCore;
 import ph.adamw.moose.core.util.config.AutoSerializable;
 import ph.adamw.moose.core.util.multiblock.pattern.MultiBlockPattern;
 
 import java.util.UUID;
 
-public abstract class MultiBlock extends AutoSerializable implements Listener {
-	public MultiBlock() {
-		MCore.getPlugin().getServer().getPluginManager().registerEvents(this, MCore.getPlugin());
-	}
-
+public abstract class MultiBlock extends AutoSerializable {
 	private String ownerUuid;
 
 	public void setOwner(OfflinePlayer player) {
@@ -33,7 +30,9 @@ public abstract class MultiBlock extends AutoSerializable implements Listener {
 	@Setter
 	private Location coreLocation;
 
-	public abstract MultiBlockPattern getPattern();
+	@Getter
+	@Setter
+	private Plugin registeredPlugin;
 
 	public abstract String getName();
 
@@ -47,12 +46,6 @@ public abstract class MultiBlock extends AutoSerializable implements Listener {
 
 	public void destroy() {
 		onDestroy();
-
-		// Prune the configs of this multiblock
-		for(Location i : getPattern().traversePattern(getCoreLocation())) {
-			MultiBlockHandler.getProtectionSection().set(i.toString(), null);
-		}
-
-		MultiBlockHandler.getMultiblocksSection().set(getCoreLocation().toString(), null);
+		MultiBlockHandler.delete(this);
 	}
 }

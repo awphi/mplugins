@@ -4,9 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
 import ph.adamw.moose.rpg.MRpg;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -20,9 +18,9 @@ public class BrewEffectDrunk extends BrewEffect implements Listener {
 	}
 
 	@Override
-	public void run(Player player, int potency, int length) {
-		BrewEffect.addCustomEffect(player, this, potency, length);
-		applyNausea(player, this);
+	public void applyExtraEffects(Player player, int potency, int length) {
+		applyTemporaryPulsingEffect(player, 1, PotionEffectType.CONFUSION, 1, potency * 100);
+		applyTemporaryPulsingEffect(player, 1, PotionEffectType.BLINDNESS, 0, potency * 100);
 	}
 
 	@EventHandler
@@ -69,20 +67,5 @@ public class BrewEffectDrunk extends BrewEffect implements Listener {
 		}
 
 		return result.toString().trim();
-	}
-
-	private void applyNausea(Player player, BrewEffectDrunk effect) {
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				if(!BrewEffect.hasEffect(player, effect, 1)) {
-					cancel();
-					return;
-				}
-
-				player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION,200 + ThreadLocalRandom.current().nextInt(200), 1), true);
-				applyNausea(player, effect);
-			}
-		}.runTaskLater(MRpg.getPlugin(), ThreadLocalRandom.current().nextLong(200));
 	}
 }

@@ -14,12 +14,15 @@ import ph.adamw.moose.core.util.config.Config;
 import ph.adamw.moose.rpg.MRpg;
 import ph.adamw.moose.rpg.brewing.effect.BrewEffect;
 import ph.adamw.moose.rpg.brewing.effect.BrewEffectDrunk;
+import ph.adamw.moose.rpg.brewing.effect.BrewEffectIgnition;
 import ph.adamw.moose.rpg.brewing.effect.BrewEffectListener;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class BrewHandler {
 	public static final String AGE_RATING = "ageTimeRating";
@@ -28,7 +31,7 @@ public class BrewHandler {
 	public static final String CLOSEST_RECIPE = "closestRecipe";
 	public static final String AGE = "age";
 
-	private final Config brewsConfig = new Config(MRpg.getPlugin(), "brews.yml", "brews.yml", false);
+	private final Config brewsConfig = new Config(MRpg.getPlugin(), "brews.yml", false);
 
 	@Getter
 	private final BrewRegistry registry = new BrewRegistry();
@@ -37,31 +40,25 @@ public class BrewHandler {
 		// Register the custom effects
 		BrewRegistry.registerCustomEffect(new BrewEffect("FOOD") {
 			@Override
-			public void run(Player player, int potency, int length) {
+			public void applyExtraEffects(Player player, int potency, int length) {
 				player.setFoodLevel(player.getFoodLevel() + potency / 2);
 				player.setSaturation(player.getSaturation() + length);
 			}
 		});
 
 		BrewRegistry.registerCustomEffect(new BrewEffectDrunk());
+		BrewRegistry.registerCustomEffect(new BrewEffectIgnition());
 
 		BrewRegistry.registerCustomEffect(new BrewEffect("SELFIGNITION") {
 			@Override
-			public void run(Player player, int potency, int length) {
-				//TODO
-			}
-		});
-
-		BrewRegistry.registerCustomEffect(new BrewEffect("IGNITION") {
-			@Override
-			public void run(Player player, int potency, int length) {
+			public void applyExtraEffects(Player player, int potency, int length) {
 				//TODO
 			}
 		});
 
 		BrewRegistry.registerCustomEffect(new BrewEffect("RAGE") {
 			@Override
-			public void run(Player player, int potency, int length) {
+			public void applyExtraEffects(Player player, int potency, int length) {
 				//TODO
 			}
 		});
@@ -71,9 +68,10 @@ public class BrewHandler {
 		MRpg.getPlugin().getServer().getPluginManager().registerEvents(new BrewEffectListener(), MRpg.getPlugin());
 
 		BrewRegistry.registerBrew(BrewRecipe.NULL_RECIPE);
+
 		// Parses the config
-		for(String i : brewsConfig.getConfigurationSection("brews").getKeys(false)) {
-			final ConfigurationSection section = brewsConfig.getConfigurationSection("brews").getConfigurationSection(i);
+		for(String i : brewsConfig.getRoot().getKeys(false)) {
+			final ConfigurationSection section = brewsConfig.getConfigurationSection(i);
 			final List<ItemStack> items = new ArrayList<>();
 
 			for(String j : section.getStringList("ingredients")) {
@@ -81,7 +79,7 @@ public class BrewHandler {
 				split[1] = split[1].toUpperCase();
 
 				if(Material.getMaterial(split[1]) == null) {
-					MRpg.getPlugin().getLogger().log(Level.SEVERE, "Could not resolve material: " + split[1] + " in recipe " + i + ", skipping...");
+					MRpg.getPlugin().getLogger().log(Level.SEVERE, "Could not resolve material: " + split[1] + " in recipe " + i + ". Skipping this ingredient...");
 					continue;
 				}
 
@@ -93,14 +91,22 @@ public class BrewHandler {
 				if(BrewEffect.isValidEffectString(j)) {
 					effects.add(j);
 				} else {
-					MRpg.getPlugin().getLogger().log(Level.SEVERE, "Could not resolve effect: " + j + " in recipe " + i + ", skipping...");
+					MRpg.getPlugin().getLogger().log(Level.SEVERE, "Could not resolve effect: " + j + " in recipe " + i + ". Skipping this effect...");
 				}
+			}
+
+			Color color = Color.BLACK;
+			final Matcher matcher = Pattern.compile("rgb\\(\\s*([0-9]{1,3})\\s*,\\s*([0-9]{1,3})\\s*,\\s*([0-9]{1,3})\\s*\\)").matcher(section.getString("colour").trim());
+			if(matcher.matches()) {
+				color = Color.fromRGB(Integer.valueOf(matcher.group(1)), Integer.valueOf(matcher.group(2)), Integer.valueOf(matcher.group(3)));
+			} else {
+				MRpg.getPlugin().getLogger().log(Level.SEVERE, "Could not resolve color: " + section.getString("colour") + " in recipe " + i + ", please use format rgb(<red>, <green>, <blue>). Skipping coloring for now...");
 			}
 
 			final BrewRecipe recipe = new BrewRecipe(
 					i,
 					section.getString("flavourtext"),
-					Color.fromRGB(section.getInt("colour")),
+					color,
 					section.getInt("cooktime"),
 					section.getInt("agetime"),
 					section.getDouble("difficulty"),
@@ -141,7 +147,7 @@ public class BrewHandler {
 	}
 
 	public static ItemStack createBrew(BrewRecipe recipe, int age, double ingredientsRating, double cookRating) {
-		final double ageRating = recipe.getAgeTime() == -1 ? 1.0d : calculateRating(age, recipe.getAgeTime(), recipe.getDifficulty());
+		final double ageRating = recipe.getAgeTime() == -1d ? -1.0d : calculateRating(age, recipe.getAgeTime(), recipe.getDifficulty());
 
 		final NBTItem result = new NBTItem(new ItemStack(Material.POTION, 1));
 		final PotionMeta meta = (PotionMeta) result.getItem().getItemMeta();

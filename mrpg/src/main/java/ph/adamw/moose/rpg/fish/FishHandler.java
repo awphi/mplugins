@@ -26,8 +26,6 @@ public class FishHandler implements Listener {
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
 	private static DecimalFormat decimalFormat = new DecimalFormat();
 
-	private static final Enchantment FISHERMANS_DELIGHT = new FishermansDelightWrapper();
-
 	static {
 		decimalFormat.setMaximumFractionDigits(2);
 	}
@@ -64,12 +62,6 @@ public class FishHandler implements Listener {
 
 	@EventHandler
 	public void onFish(PlayerFishEvent event) {
-		final ItemStack heldItem = event.getPlayer().getInventory().getItemInMainHand();
-
-		if(heldItem.getType() != Material.FISHING_ROD || !heldItem.containsEnchantment(FISHERMANS_DELIGHT)) {
-			return;
-		}
-
 		if(event.getState() == PlayerFishEvent.State.CAUGHT_FISH) {
 			event.getPlayer().getInventory().addItem(getRandomFish(event.getPlayer()));
 		}

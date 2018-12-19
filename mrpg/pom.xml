@@ -20,13 +20,6 @@
         </dependency>
 
         <dependency>
-            <groupId>ph.adamw</groupId>
-            <artifactId>meconomy</artifactId>
-            <version>1.0</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
             <groupId>com.github.tr7zw</groupId>
             <artifactId>Item-NBT-API</artifactId>
             <version>master</version>

@@ -25,14 +25,14 @@ import ph.adamw.moose.rpg.brewing.BrewHandler;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 public class MultiBlockVat extends MultiBlock {
-	private final static transient MultiBlockPattern PATTERN = new MultiBlockPattern(
+	public final static transient MultiBlockPattern PATTERN = new MultiBlockPattern(
 			new MultiBlockCore(Material.CAULDRON),
 			new MultiBlockElement(Material.FIRE, 0 , -1, 0)
 	);
@@ -41,11 +41,6 @@ public class MultiBlockVat extends MultiBlock {
 
 	private long startTime;
 	private List<ItemStack> inventory = new ArrayList<>();
-
-	@Override
-	public MultiBlockPattern getPattern() {
-		return PATTERN;
-	}
 
 	@Override
 	public String getName() {
@@ -145,7 +140,7 @@ public class MultiBlockVat extends MultiBlock {
 			final String str = inventory.get(0).getType().name().split("_")[0].toLowerCase().trim();
 			final String name = str.substring(0, 1).toUpperCase() + str.substring(1);
 			meta.setDisplayName(ChatColor.GRAY + name + "y Mixture");
-			meta.setLore(new ArrayList<>(Collections.singleton(ChatColor.GRAY + "Mixed on: " + ChatColor.WHITE + new Date().toString())));
+			meta.setLore(new ArrayList<>(Arrays.asList(ChatColor.GRAY + "This looks like it needs fermenting.", ChatColor.GRAY + "Mixed on: " + ChatColor.WHITE + new Date().toString())));
 
 			mixture.getItem().setItemMeta(meta);
 

@@ -8,13 +8,13 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="mcore" />
-        <module name="meconomy" />
         <module name="mrpg" />
         <module name="msurvival" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="maggregator" target="1.5" />
+      <module name="meconomy" target="1.8" />
       <module name="mutils" target="1.8" />
     </bytecodeTargetLevel>
   </component>

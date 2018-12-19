@@ -3,6 +3,7 @@ package ph.adamw.moose.rpg.brewing.effect;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import ph.adamw.moose.rpg.MRpg;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class BrewEffect {
 	@Getter
@@ -25,7 +27,12 @@ public abstract class BrewEffect {
 		this.name = name;
 	}
 
-	public abstract void run(Player player, int potency, int length);
+	public void run(Player player, int potency, int length) {
+		BrewEffect.addCustomEffect(player, this, potency, length);
+		applyExtraEffects(player, potency, length);
+	}
+
+	public abstract void applyExtraEffects(Player player, int potency, int length);
 
 	public static boolean isValidEffectString(String effect) {
 		final String[] split = effect.split(";");
@@ -55,9 +62,9 @@ public abstract class BrewEffect {
 
 	public static int getPotencyOfEffect(Player player, BrewEffect effect) {
 		if(player.isOnline()) {
-			for(BrewCustomEffect effect1 : getEffects(player)) {
-				if(effect1.getEffect().equals(effect)) {
-					return effect1.getPotency();
+			for(BrewCustomEffect customEffect : getEffects(player)) {
+				if(customEffect.getEffect().equals(effect)) {
+					return customEffect.getPotency();
 				}
 			}
 		}
@@ -83,5 +90,21 @@ public abstract class BrewEffect {
 	public static class BrewCustomEffect {
 		private final BrewEffect effect;
 		private final int potency;
+	}
+
+	protected void applyTemporaryPulsingEffect(Player player, int potencyNeeded, PotionEffectType type, int amplifier, int duration) {
+		final BrewEffect effect = this;
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				if(!BrewEffect.hasEffect(player, effect, potencyNeeded)) {
+					cancel();
+					return;
+				}
+
+				player.addPotionEffect(new PotionEffect(type,duration + ThreadLocalRandom.current().nextInt(duration / 2), amplifier), true);
+				applyTemporaryPulsingEffect(player, potencyNeeded, type, amplifier, duration);
+			}
+		}.runTaskLater(MRpg.getPlugin(), ThreadLocalRandom.current().nextLong(duration));
 	}
 }

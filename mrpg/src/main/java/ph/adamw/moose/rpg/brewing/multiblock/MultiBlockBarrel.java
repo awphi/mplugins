@@ -6,8 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Bisected;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
@@ -29,14 +28,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class MultiBlockBarrel extends MultiBlock {
+public class MultiBlockBarrel extends MultiBlock implements Listener {
 	private transient Inventory openInventory;
 	private transient BukkitTask task;
 
 	private List<ItemStack> inventory = new ArrayList<>();
 	private long lastAccess;
 
-	private final static transient MultiBlockPattern PATTERN = new MultiBlockPattern(
+	public MultiBlockBarrel() {
+		MRpg.getPlugin().getServer().getPluginManager().registerEvents(this, MRpg.getPlugin());
+	}
+
+	public final static transient MultiBlockPattern PATTERN = new MultiBlockPattern(
 			// Bottom
 			new MultiBlockStairs(Material.OAK_STAIRS, 0, 0,0, BlockFace.SOUTH, Bisected.Half.TOP),
 			new MultiBlockStairs(Material.OAK_STAIRS, 1, 0, 0, BlockFace.SOUTH, Bisected.Half.TOP),
@@ -49,11 +52,6 @@ public class MultiBlockBarrel extends MultiBlock {
 			new MultiBlockStairs(Material.OAK_STAIRS, 1, 1, 1, BlockFace.NORTH, Bisected.Half.BOTTOM),
 			new MultiBlockStairs(Material.OAK_STAIRS, 0, 1, 1, BlockFace.NORTH, Bisected.Half.BOTTOM)
 		);
-
-	@Override
-	public MultiBlockPattern getPattern() {
-		return PATTERN;
-	}
 
 	@Override
 	public String getName() {
