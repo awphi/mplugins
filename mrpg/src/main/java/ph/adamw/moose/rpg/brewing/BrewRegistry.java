@@ -37,7 +37,7 @@ public class BrewRegistry {
 	public static BrewRecipe getClosestRecipe(List<ItemStack> items) {
 		BrewRecipe scorer = BrewRecipe.NULL_RECIPE;
 
-		// Needs at least a rating of at least 0.2 on any brew to not return null, TODO add this to a general mrpg config
+		// Needs at least a rating of at least 0.2 on any brew to not return null
 		double cache = 0.2d;
 
 		for(BrewRecipe i : recipes.values()) {

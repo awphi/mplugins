@@ -44,8 +44,8 @@ public class MultiBlockListener implements Listener {
 				}
 			}
 		} else if(event.getPlayer().equals(mb.getOwner()) || mb.isTrusted(event.getPlayer())) {
-			mb.onActivate(event);
 			event.setCancelled(true);
+			mb.onActivate(event);
 		}
 	}
 

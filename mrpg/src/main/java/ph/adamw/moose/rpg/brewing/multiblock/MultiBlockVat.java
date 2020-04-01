@@ -65,6 +65,7 @@ public class MultiBlockVat extends MultiBlock {
 		// Create a new mixture
 		if(inventory.size() <= 0) {
 			if(itemInHand.getType().equals(Material.WATER_BUCKET)) {
+				event.setCancelled(false);
 				return;
 			}
 

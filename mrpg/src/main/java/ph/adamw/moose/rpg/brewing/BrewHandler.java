@@ -16,6 +16,8 @@ import ph.adamw.moose.rpg.brewing.effect.BrewEffect;
 import ph.adamw.moose.rpg.brewing.effect.BrewEffectDrunk;
 import ph.adamw.moose.rpg.brewing.effect.BrewEffectIgnition;
 import ph.adamw.moose.rpg.brewing.effect.BrewEffectListener;
+import ph.adamw.moose.rpg.diet.FoodGroup;
+import ph.adamw.moose.rpg.state.RpgPlayer;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,32 +43,16 @@ public class BrewHandler {
 		BrewRegistry.registerCustomEffect(new BrewEffect("FOOD") {
 			@Override
 			public void applyExtraEffects(Player player, int potency, int length) {
-				player.setFoodLevel(player.getFoodLevel() + potency / 2);
-				player.setSaturation(player.getSaturation() + length);
+				RpgPlayer.from(player).consume(FoodGroup.LIQUID, (int) ((double) potency / 2d), length);
 			}
 		});
 
 		BrewRegistry.registerCustomEffect(new BrewEffectDrunk());
 		BrewRegistry.registerCustomEffect(new BrewEffectIgnition());
-
-		BrewRegistry.registerCustomEffect(new BrewEffect("SELFIGNITION") {
-			@Override
-			public void applyExtraEffects(Player player, int potency, int length) {
-				//TODO
-			}
-		});
-
-		BrewRegistry.registerCustomEffect(new BrewEffect("RAGE") {
-			@Override
-			public void applyExtraEffects(Player player, int potency, int length) {
-				//TODO
-			}
-		});
 	}
 
 	public BrewHandler() {
 		MRpg.getPlugin().getServer().getPluginManager().registerEvents(new BrewEffectListener(), MRpg.getPlugin());
-
 		BrewRegistry.registerBrew(BrewRecipe.NULL_RECIPE);
 
 		// Parses the config

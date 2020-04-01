@@ -60,9 +60,7 @@ public class GuiWrapper implements Listener {
 
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent e) {
-		final String invName = e.getInventory().getName();
-
-		if (!invName.equals(inventory.getName())) {
+		if (e.getInventory() != inventory) {
 			return;
 		}
 

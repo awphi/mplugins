@@ -8,6 +8,8 @@ import org.bukkit.inventory.ItemStack;
 import ph.adamw.moose.core.util.config.AutoSerializable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -23,8 +25,7 @@ public class BrewRecipe {
 			100,
 			1,
 			new ArrayList<>(),
-			//TODO add some negative effects for spoiled brews here.
-			new ArrayList<>()
+			new ArrayList<>(Arrays.asList("HUNGER 1:5", "SLOWNESS 1:5", "SLOW_DIGGING 2:3"))
 	);
 
 	private final String name;

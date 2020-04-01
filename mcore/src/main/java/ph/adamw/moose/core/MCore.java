@@ -16,7 +16,7 @@ public class MCore extends MPlugin {
 		plugin = this;
 
 		MCore.getPlugin().getServer().getPluginManager().registerEvents(new RankListener(), MCore.getPlugin());
-		MCore.getPlugin().getServer().getPluginManager().registerEvents(new EnchantListener(), MCore.getPlugin());
+		//MCore.getPlugin().getServer().getPluginManager().registerEvents(new EnchantListener(), MCore.getPlugin());
 
 		CommandWrapper.registerCommand(this, new CommandHelp());
 		CommandWrapper.registerCommand(this, new CommandRank());

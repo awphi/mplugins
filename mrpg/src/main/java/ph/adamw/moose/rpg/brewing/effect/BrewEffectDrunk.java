@@ -10,7 +10,7 @@ import ph.adamw.moose.rpg.MRpg;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BrewEffectDrunk extends BrewEffect implements Listener {
-	private final static transient String ALPHABET = "abcdefghijklmnopqrstuvwxyz";
+	private final static transient String[] ALPHABET = "abcdefghijklmnopqrstuvwxyz".split("");
 
 	public BrewEffectDrunk() {
 		super("DRUNK");
@@ -43,7 +43,7 @@ public class BrewEffectDrunk extends BrewEffect implements Listener {
 
 			// Adds a letter in randomly to 50% of words at potency 3
 			if(addChance >= drunkRating) {
-				final String letter = ALPHABET.split("")[ThreadLocalRandom.current().nextInt(26)];
+				final String letter = ALPHABET[ThreadLocalRandom.current().nextInt(26)];
 				final int pos = ThreadLocalRandom.current().nextInt(n);
 				word = word.substring(0, pos) + letter + word.substring(pos, word.length());
 			}

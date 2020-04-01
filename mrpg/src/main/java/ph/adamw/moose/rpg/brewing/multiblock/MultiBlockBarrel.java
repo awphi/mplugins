@@ -16,7 +16,7 @@ import org.bukkit.scheduler.BukkitTask;
 import ph.adamw.moose.core.util.ItemUtils;
 import ph.adamw.moose.core.util.multiblock.MultiBlock;
 import ph.adamw.moose.core.util.multiblock.pattern.MultiBlockPattern;
-import ph.adamw.moose.core.util.multiblock.pattern.MultiBlockStairs;
+import ph.adamw.moose.core.util.multiblock.pattern.MultiBlockBisectedDirectional;
 import ph.adamw.moose.rpg.MRpg;
 import ph.adamw.moose.rpg.brewing.BrewRecipe;
 import ph.adamw.moose.rpg.brewing.BrewHandler;
@@ -41,16 +41,16 @@ public class MultiBlockBarrel extends MultiBlock implements Listener {
 
 	public final static transient MultiBlockPattern PATTERN = new MultiBlockPattern(
 			// Bottom
-			new MultiBlockStairs(Material.OAK_STAIRS, 0, 0,0, BlockFace.SOUTH, Bisected.Half.TOP),
-			new MultiBlockStairs(Material.OAK_STAIRS, 1, 0, 0, BlockFace.SOUTH, Bisected.Half.TOP),
-			new MultiBlockStairs(Material.OAK_STAIRS, 1, 0, 1, BlockFace.NORTH, Bisected.Half.TOP),
-			new MultiBlockStairs(Material.OAK_STAIRS, 0, 0, 1, BlockFace.NORTH, Bisected.Half.TOP),
+			new MultiBlockBisectedDirectional(Material.OAK_STAIRS, 0, 0,0, BlockFace.SOUTH, Bisected.Half.TOP),
+			new MultiBlockBisectedDirectional(Material.OAK_STAIRS, 1, 0, 0, BlockFace.SOUTH, Bisected.Half.TOP),
+			new MultiBlockBisectedDirectional(Material.OAK_STAIRS, 1, 0, 1, BlockFace.NORTH, Bisected.Half.TOP),
+			new MultiBlockBisectedDirectional(Material.OAK_STAIRS, 0, 0, 1, BlockFace.NORTH, Bisected.Half.TOP),
 
 			//Top
-			new MultiBlockStairs(Material.OAK_STAIRS, 0, 1, 0, BlockFace.SOUTH, Bisected.Half.BOTTOM),
-			new MultiBlockStairs(Material.OAK_STAIRS, 1, 1, 0, BlockFace.SOUTH, Bisected.Half.BOTTOM),
-			new MultiBlockStairs(Material.OAK_STAIRS, 1, 1, 1, BlockFace.NORTH, Bisected.Half.BOTTOM),
-			new MultiBlockStairs(Material.OAK_STAIRS, 0, 1, 1, BlockFace.NORTH, Bisected.Half.BOTTOM)
+			new MultiBlockBisectedDirectional(Material.OAK_STAIRS, 0, 1, 0, BlockFace.SOUTH, Bisected.Half.BOTTOM),
+			new MultiBlockBisectedDirectional(Material.OAK_STAIRS, 1, 1, 0, BlockFace.SOUTH, Bisected.Half.BOTTOM),
+			new MultiBlockBisectedDirectional(Material.OAK_STAIRS, 1, 1, 1, BlockFace.NORTH, Bisected.Half.BOTTOM),
+			new MultiBlockBisectedDirectional(Material.OAK_STAIRS, 0, 1, 1, BlockFace.NORTH, Bisected.Half.BOTTOM)
 		);
 
 	@Override

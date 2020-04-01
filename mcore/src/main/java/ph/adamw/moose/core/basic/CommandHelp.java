@@ -17,7 +17,7 @@ public class CommandHelp extends CommandWrapper {
 	@Override
 	public void commandSuccessful(String syntax, CommandSender sender, Command command, String label, Object[] args) {
 		if(syntax.equals("")) {
-			//TODO
+			//TODO help for all commands w/ paging
 		} else {
 			ChatUtils.messageCommandHelp(sender, (CommandWrapper) args[0]);
 		}

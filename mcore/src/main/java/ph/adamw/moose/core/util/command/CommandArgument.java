@@ -140,7 +140,7 @@ public abstract class CommandArgument<T> {
 				// Should never call unless [string] has been used in the wrong context
 				// for fixed string syntax, use them literally when defining syntax (w/o square brackets) e.g.
 				// /admin economy add [offlineplayer] [integer]
-				// /admin economy remove [offlineplayer] integer
+				// /admin economy remove [offlineplayer] [integer]
 
 				return "Didn't recognise {" + arg + "} as a string";
 			}
